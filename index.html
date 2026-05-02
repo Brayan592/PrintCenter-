@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Papeleria Pro POS</title>
+    <title>PrintCenter Pro POS</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -506,7 +506,7 @@
                     </div>
                     
                     <div style="text-align:center; color:var(--text-secondary); font-size:13px; font-weight:800; margin-top:40px; margin-bottom:10px; opacity:0.6; letter-spacing: 1px; animation: pulseGlow 2s infinite alternate;">
-                        PAPELERIA PRO v20.26.05.160
+                        PrinCenter PRO v20.26.05.165
                     </div>
                 </div>
 
@@ -1219,7 +1219,7 @@
         function showTicket(venta) { 
             const ticketEl = document.getElementById('ticket-detail');
             ticketEl.classList.remove('live-print'); void ticketEl.offsetWidth; 
-            ticketEl.innerHTML = `<div style="text-align:center; margin-bottom:15px; border-bottom:2px dashed var(--border-color); padding-bottom:15px;"><b style="font-size:18px; font-weight:900;">PAPELERIA PRO</b><br><small style="font-weight:600;">${new Date(venta.fecha).toLocaleString()}</small></div><div style="margin-bottom:15px; font-weight:800;"><b>Método:</b> <span style="color:var(--accent-color);">${venta.pago || 'Cotización'}</span></div><table style="width:100%; border-collapse:collapse; font-size:13px; font-weight:600;">${venta.productos.map(p => `<tr><td style="padding:6px 0;">${p.qty}x ${p.nombre}</td><td style="text-align:right;">$${(p.precioVenta*p.qty).toFixed(2)}</td></tr>`).join('')}</table><div style="border-top:2px dashed var(--border-color); margin-top:15px; padding-top:15px; text-align:right; font-size:20px; font-weight:900;"><b>TOTAL: <span style="color:var(--accent-color);">$${venta.total.toFixed(2)}</span></b></div>`; 
+            ticketEl.innerHTML = `<div style="text-align:center; margin-bottom:15px; border-bottom:2px dashed var(--border-color); padding-bottom:15px;"><b style="font-size:18px; font-weight:900;">PrintCenter PRO</b><br><small style="font-weight:600;">${new Date(venta.fecha).toLocaleString()}</small></div><div style="margin-bottom:15px; font-weight:800;"><b>Método:</b> <span style="color:var(--accent-color);">${venta.pago || 'Cotización'}</span></div><table style="width:100%; border-collapse:collapse; font-size:13px; font-weight:600;">${venta.productos.map(p => `<tr><td style="padding:6px 0;">${p.qty}x ${p.nombre}</td><td style="text-align:right;">$${(p.precioVenta*p.qty).toFixed(2)}</td></tr>`).join('')}</table><div style="border-top:2px dashed var(--border-color); margin-top:15px; padding-top:15px; text-align:right; font-size:20px; font-weight:900;"><b>TOTAL: <span style="color:var(--accent-color);">$${venta.total.toFixed(2)}</span></b></div>`; 
             document.getElementById('ticket-modal').classList.add('active'); 
             ticketEl.classList.add('live-print');
         }
