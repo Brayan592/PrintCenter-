@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -436,14 +437,15 @@
                         </div>
                     </div>
 
-                    <div class="drag-scroll-area stagger-item" style="background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:24px; box-shadow:var(--shadow-sm);">
+                    <div class="drag-scroll-area stagger-item" id="export-registro-diario" style="background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:24px; box-shadow:var(--shadow-sm);">
                         <h3 style="font-size:20px; margin-bottom:18px; font-weight:900;"><i data-lucide="calendar-days" size="20" style="vertical-align:middle; color:var(--accent-color);"></i> Registro Diario de Ventas (Mes Actual)</h3>
                         <div><table class="excel-table"><thead id="excel-daily-header"></thead><tbody id="excel-daily-body"></tbody></table></div>
                     </div>
-                    <div class="drag-scroll-area stagger-item" style="animation-delay:0.1s; background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:24px; box-shadow:var(--shadow-sm);">
+                    <div class="drag-scroll-area stagger-item" id="export-conteo-fondos" style="animation-delay:0.1s; background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:24px; box-shadow:var(--shadow-sm);">
                         <h3 style="font-size:20px; margin-bottom:18px; font-weight:900;"><i data-lucide="wallet" size="20" style="vertical-align:middle; color:var(--success-color);"></i> Conteo Definitivo de Fondos</h3>
                         <div><table class="excel-table" style="border: 2px solid var(--accent-color);"><thead id="tabla-definitiva-head"></thead><tbody><tr id="conteo-final-row"></tr></tbody></table></div>
                     </div>
+                    
                     <div class="stagger-item" style="animation-delay:0.2s; display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:24px; margin-bottom: 24px; align-items: stretch;">
                         <div style="background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); display:flex; flex-direction:column; justify-content:space-between;"><div><h4 style="margin-bottom:15px; font-size:18px; font-weight:800;"><i data-lucide="coins" size="18" style="color:var(--success-color);"></i> Registrar Propina</h4><div class="form-group"><input type="number" id="monto-propina" placeholder="Monto $0.00"></div></div><button class="btn btn-success" style="width:100%;" onclick="registrarPropina()">Agregar Propina</button></div>
                         <div style="background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); display:flex; flex-direction:column; justify-content:space-between;"><div><h4 style="margin-bottom:15px; font-size:18px; font-weight:800;"><i data-lucide="trending-down" size="18" style="color:var(--danger-color);"></i> Registrar Gasto / Egreso</h4><div class="form-group"><select id="gasto-tipo"></select></div><div class="form-group"><input type="text" id="gasto-desc" placeholder="Descripción del gasto"></div><div class="form-group"><input type="number" id="gasto-monto" placeholder="Monto $0.00"></div></div><button class="btn btn-danger" style="width:100%;" onclick="registrarGasto()">Registrar Egreso</button></div>
@@ -453,7 +455,7 @@
                     <div class="drag-scroll-area stagger-item" style="animation-delay:0.3s;" id="gastos-container-wrapper" style="background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); margin-bottom: 24px;">
                     </div>
 
-                    <div class="drag-scroll-area stagger-item" style="animation-delay:0.4s; background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); margin-bottom: 24px;">
+                    <div class="drag-scroll-area stagger-item" id="export-meses-anteriores" style="animation-delay:0.4s; background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); margin-bottom: 24px;">
                         <h3 style="font-size:20px; margin-bottom:18px; font-weight:900;"><i data-lucide="archive" size="20" style="vertical-align:middle; color:var(--text-secondary);"></i> Resumen de Meses Anteriores</h3>
                         <div>
                             <table class="excel-table">
@@ -511,10 +513,20 @@
                         <div id="distribucion-inputs"></div>
                         <button class="btn btn-primary" style="width:100%; margin-top:15px;" onclick="saveConfigDistribucion()"><i data-lucide="save" size="18" style="vertical-align:middle; margin-right:8px;"></i> Guardar Divisiones Dinámicas</button>
                     </div>
+
+                    <div class="stagger-item" style="animation-delay:0.45s; background:var(--card-bg); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:24px; box-shadow:var(--shadow-sm);">
+                        <h3 style="font-size:18px; margin-bottom:10px; font-weight:800; display:flex; align-items:center; gap:10px;"><i data-lucide="image" size="20" style="color:var(--accent-color);"></i> Exportar Finanzas (PNG)</h3>
+                        <p style="font-size:14px; color:var(--text-secondary); margin-bottom:20px; font-weight:600;">Descarga tus reportes financieros como imágenes de alta calidad para compartirlos fácilmente.</p>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <button class="btn btn-secondary" onclick="downloadTableAsPNG('export-registro-diario', 'Registro_Diario')"><i data-lucide="calendar-days" size="18" style="vertical-align:middle; margin-right:8px;"></i> PNG: Registro Diario de Ventas</button>
+                            <button class="btn btn-secondary" onclick="downloadTableAsPNG('export-conteo-fondos', 'Conteo_Definitivo')"><i data-lucide="wallet" size="18" style="vertical-align:middle; margin-right:8px;"></i> PNG: Conteo Definitivo</button>
+                            <button class="btn btn-secondary" onclick="downloadTableAsPNG('export-meses-anteriores', 'Meses_Anteriores')"><i data-lucide="archive" size="18" style="vertical-align:middle; margin-right:8px;"></i> PNG: Meses Anteriores</button>
+                        </div>
+                    </div>
                     
                     <div class="stagger-item" style="animation-delay:0.5s;">
-                        <button class="btn btn-secondary" style="width:100%; margin-bottom:15px;" onclick="exportData()"><i data-lucide="download" size="18" style="vertical-align:middle; margin-right:8px;"></i> Exportar Copia de Seguridad</button>
-                        <div style="margin-bottom:25px;"><label class="btn btn-secondary" style="width:100%; display:inline-block; box-sizing:border-box; cursor:pointer; text-align:center;"><i data-lucide="upload" size="18" style="vertical-align:middle; margin-right:8px;"></i> Importar Copia de Seguridad<input type="file" id="import-file" style="display:none;" onchange="importData(event)"></label></div>
+                        <button class="btn btn-secondary" style="width:100%; margin-bottom:15px;" onclick="exportData()"><i data-lucide="download" size="18" style="vertical-align:middle; margin-right:8px;"></i> Exportar Copia de Seguridad JSON</button>
+                        <div style="margin-bottom:25px;"><label class="btn btn-secondary" style="width:100%; display:inline-block; box-sizing:border-box; cursor:pointer; text-align:center;"><i data-lucide="upload" size="18" style="vertical-align:middle; margin-right:8px;"></i> Importar Copia de Seguridad JSON<input type="file" id="import-file" style="display:none;" onchange="importData(event)"></label></div>
                         <button class="btn btn-danger" style="width:100%; margin-bottom: 25px;" onclick="resetSystem()"><i data-lucide="alert-triangle" size="18" style="vertical-align:middle; margin-right:8px;"></i> Borrar Toda la Base de Datos</button>
                     </div>
                     
@@ -1234,13 +1246,12 @@
                 
                 if(isArchived) div.style.opacity = '0.5';
                 
-                // Lógica unificada para click normal y Haptic Touch (Long Press)
                 div.onpointerdown = (e) => {
                     isLongPress = false;
                     pressTimer = setTimeout(() => {
                         isLongPress = true;
                         openQtyModal(p.id);
-                    }, 600); // 600ms para emular un toque Haptic nativo
+                    }, 600); 
                 };
                 div.onpointerup = (e) => {
                     clearTimeout(pressTimer);
@@ -1248,7 +1259,7 @@
                 };
                 div.onpointerleave = () => clearTimeout(pressTimer);
                 div.onpointercancel = () => clearTimeout(pressTimer);
-                div.oncontextmenu = (e) => { e.preventDefault(); return false; }; // Evita menú nativo de iOS/Android
+                div.oncontextmenu = (e) => { e.preventDefault(); return false; }; 
                 
                 const isTop = topIds.includes(p.id) && !isArchived ? `<div class="bestseller-badge"><i data-lucide="flame" size="12" style="vertical-align:text-top;"></i> TOP</div>` : '';
                 const statusBadge = isArchived 
@@ -1261,10 +1272,9 @@
             renderIcons();
         }
 
-        // LÓGICA DEL SELECTOR RÁPIDO DE CANTIDAD
         function openQtyModal(id) {
             playSynthSound('modal');
-            if(navigator.vibrate) navigator.vibrate(50); // Feedback táctil vibratorio si el celular lo soporta
+            if(navigator.vibrate) navigator.vibrate(50);
             const prod = productos.find(p => p.id === id);
             if(!prod) return;
             
@@ -1286,7 +1296,7 @@
             const max = parseInt(document.getElementById('qty-slider').max);
             let v = parseInt(val);
             if(isNaN(v) || v < 1) v = 1;
-            if(v > max) v = max; // Tope visual ligado al stock disponible
+            if(v > max) v = max; 
             document.getElementById('qty-input').value = v;
             document.getElementById('qty-slider').value = v; 
         }
@@ -1325,7 +1335,6 @@
         function closeQtyModal() {
             document.getElementById('qty-modal').classList.remove('active');
         }
-        // FIN LOGICA CANTIDAD
 
         function addToCart(id, event) {
             const prod = productos.find(p => p.id === id); if (prod.stock <= 0) { triggerError('ventas'); showToast('¡Agotado! No se puede vender.'); return; }
@@ -2196,6 +2205,59 @@
         
         function deleteProduct() { const id = parseInt(document.getElementById('prod-id').value); lastDeletedIndex = productos.findIndex(p => p.id === id); if (lastDeletedIndex > -1) { lastDeletedProduct = productos[lastDeletedIndex]; productos.splice(lastDeletedIndex, 1); saveToStorage(); closeProductModal(null); renderAll(); playSynthSound('delete'); showUndoToast('Producto borrado', undoDelete); } }
         
+        // Exportación Robusta de Imágenes para WebViews
+        async function downloadTableAsPNG(elementId, fileName) {
+            playSynthSound('modal');
+            showToast('Generando imagen de alta calidad...');
+            
+            const targetTab = document.getElementById('recursos');
+            const wasHidden = !targetTab.classList.contains('active');
+            
+            // Si la tabla está en una pestaña oculta, html2canvas no la verá. 
+            // La mostramos de manera invisible por un segundo para la foto.
+            if (wasHidden) {
+                targetTab.style.display = 'block';
+                targetTab.style.position = 'absolute';
+                targetTab.style.top = '-9999px';
+                targetTab.style.visibility = 'hidden';
+            }
+
+            const element = document.getElementById(elementId);
+            
+            try {
+                const canvas = await html2canvas(element, { 
+                    backgroundColor: getComputedStyle(document.body).backgroundColor,
+                    scale: 2, // Retida definition para dispositivos móviles
+                    logging: false,
+                    useCORS: true
+                });
+                
+                const dataURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = `PrintCenter_${fileName}_${getLocalISO().slice(0,10)}.png`;
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                playSynthSound('save');
+                showToast('Imagen guardada en tu dispositivo');
+            } catch (error) {
+                console.error("Error capturando PNG:", error);
+                triggerError('configuracion');
+                showToast('Error al generar la imagen');
+            } finally {
+                // Restauramos la pestaña a su estado original
+                if (wasHidden) {
+                    targetTab.style.display = '';
+                    targetTab.style.position = '';
+                    targetTab.style.top = '';
+                    targetTab.style.visibility = '';
+                }
+            }
+        }
+
         function switchTab(tabId, el) { playSynthSound('click_tab'); document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active')); document.querySelectorAll('.sidebar-menu button').forEach(item => item.classList.remove('active')); document.getElementById(tabId).classList.add('active'); if(el) el.classList.add('active'); const tabsArr = ['ventas', 'pedidos', 'historial', 'recursos', 'reportes', 'inventario', 'clientes', 'configuracion']; const index = tabsArr.indexOf(tabId); if(index >= 0) { if (document.querySelectorAll('.tab-item')[index]) document.querySelectorAll('.tab-item')[index].classList.add('active'); if (document.querySelectorAll('.sidebar-menu button')[index]) document.querySelectorAll('.sidebar-menu button')[index].classList.add('active'); } const titles = { ventas: "Caja y Mostrador", pedidos: "Tablero Kanban", historial: "Archivo de Transacciones", recursos: "Control de Flujo", reportes: "Rendimiento Global", inventario: "Almacén", clientes: "Directorio de Clientes", configuracion: "Ajustes del Sistema" }; document.getElementById('header-title').innerText = titles[tabId]; if (tabId === 'reportes') setTimeout(renderReports, 50); if (tabId === 'pedidos') setTimeout(renderPedidos, 50); if (tabId === 'recursos') setTimeout(renderFinanzas, 50); if (tabId === 'clientes') setTimeout(renderClientesTab, 50); document.querySelector('.sidebar').classList.remove('mobile-open'); }
         function toggleDarkMode() { const isDark = document.getElementById('dark-mode-toggle').checked; if(isDark) document.documentElement.setAttribute('data-theme', 'dark'); else document.documentElement.removeAttribute('data-theme'); localStorage.setItem('dark_mode', isDark); if (document.getElementById('reportes').classList.contains('active')) renderReports(); }
         function resetSystem() { playSynthSound('delete'); if (confirm('¿Peligro: Borrar toda la base de datos de PC&C?')) { productos = defProducts; ventas = []; pedidos = []; gastos = []; propinas = []; ajustesSaldo = { costo: 0, gastos: 0 }; clientesDirectorio = []; distribuciones = [ { id: 1, label: "Mejora", pct: 15 }, { id: 2, label: "Servicio", pct: 45 }, { id: 3, label: "Propia", pct: 40 } ]; saveToStorage(); renderAll(); } }
