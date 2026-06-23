@@ -37,8 +37,6 @@
             --border-color: rgba(255, 255, 255, 0.05); --glass-bg: rgba(28, 28, 30, 0.85); --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        [data-theme="eco"] { --accent-color: #28a745; --accent-glow: rgba(40, 167, 69, 0.3); --bg-color: #f1f8f1; }
-
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         *, button, .btn, .chip, .product-card, .tab-item, a, input, select { touch-action: manipulation; }
@@ -54,7 +52,6 @@
             -webkit-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
         }
 
-        /* Estilos Premium para el Slider (Input Range) */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
@@ -339,7 +336,7 @@
                     <button onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="20"></i> Ajustes</button>
                 </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.010 Ultimate Premium</div>
+            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.011 Ultimate Premium</div>
         </div>
 
         <div class="main-content" id="main-scroll-area">
@@ -531,7 +528,7 @@
                     </div>
                     
                     <div style="text-align:center; color:var(--text-secondary); font-size:13px; font-weight:800; margin-top:40px; margin-bottom:10px; opacity:0.6; letter-spacing: 1px; animation: pulseGlow 2s infinite alternate;">
-                        PrintCenter Pro v20.26.06.010
+                        PrintCenter Pro v20.26.06.011
                     </div>
                 </div>
 
@@ -2152,7 +2149,7 @@
         
         async function downloadTableAsPNG(elementId, fileName) {
             playSynthSound('modal');
-            showToast('Generando reporte... Por favor no toques la pantalla.');
+            showToast('Generando imagen de alta calidad...');
             
             const targetTab = document.getElementById('recursos');
             const wasHidden = !targetTab.classList.contains('active');
@@ -2168,20 +2165,26 @@
             try {
                 const canvas = await html2canvas(element, { 
                     backgroundColor: getComputedStyle(document.body).backgroundColor,
-                    scale: 1, 
+                    scale: 1.5, 
                     useCORS: true,
                     logging: false,
                     removeContainer: true
                 });
                 
-                const dataURL = canvas.toDataURL('image/jpeg', 0.9); 
-                showImagePreviewModal(dataURL);
-                playSynthSound('save');
+                const dataURL = canvas.toDataURL('image/png');
+                
+                if (typeof median !== 'undefined' && median.share && median.share.downloadImage) {
+                    median.share.downloadImage({ base64: dataURL.split(',')[1] });
+                    playSynthSound('save');
+                    showToast('¡Imagen guardada en tu galería!');
+                } else {
+                    showImagePreviewModal(dataURL);
+                }
                 
             } catch (error) {
                 console.error("Error capturando la tabla:", error);
                 triggerError('configuracion');
-                showToast('Error por falta de memoria RAM en el dispositivo.');
+                showToast('Error al generar la imagen.');
             } finally {
                 if (wasHidden) {
                     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
