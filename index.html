@@ -339,7 +339,7 @@
                     <button onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="20"></i> Ajustes</button>
                 </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.006 Ultimate Premium</div>
+            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.010 Ultimate Premium</div>
         </div>
 
         <div class="main-content" id="main-scroll-area">
@@ -531,7 +531,7 @@
                     </div>
                     
                     <div style="text-align:center; color:var(--text-secondary); font-size:13px; font-weight:800; margin-top:40px; margin-bottom:10px; opacity:0.6; letter-spacing: 1px; animation: pulseGlow 2s infinite alternate;">
-                        PrintCenter Pro v20.26.06.006
+                        PrintCenter Pro v20.26.06.010
                     </div>
                 </div>
 
@@ -732,26 +732,6 @@
                 </select>
             </div>
             
-            <div id="calculadora-paquete" style="background:var(--input-bg); border-radius:var(--radius-sm); padding:15px; margin-bottom:15px; border:1px solid var(--border-color); box-shadow:inset 0 2px 5px rgba(0,0,0,0.02);">
-                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleCalcPaquete()">
-                    <span style="font-size:13px; font-weight:800; color:var(--accent-color);"><i data-lucide="calculator" size="14" style="vertical-align:middle;"></i> Asistente de Costos por Paquete</span>
-                    <i data-lucide="chevron-down" size="16" style="color:var(--text-secondary);" id="calc-icon"></i>
-                </div>
-                <div id="calc-paquete-body" style="display:none; margin-top:15px; animation: slideUpFade 0.3s ease;">
-                    <div style="display:flex; gap:10px;">
-                        <div class="form-group" style="flex:1; margin-bottom:0;">
-                            <label style="font-size:11px;">Costo del Paquete ($)</label>
-                            <input type="number" id="calc-paquete-costo" placeholder="0.00" oninput="autoCalcularCosto()" style="padding:12px; font-size:14px;">
-                        </div>
-                        <div class="form-group" style="flex:1; margin-bottom:0;">
-                            <label style="font-size:11px;">Unidades Trae</label>
-                            <input type="number" id="calc-paquete-unidades" placeholder="Ej. 500" oninput="autoCalcularCosto()" style="padding:12px; font-size:14px;">
-                        </div>
-                    </div>
-                    <div id="calc-sugerencia" style="font-size:13px; color:var(--text-secondary); margin-top:12px; font-weight:600; text-align:center;"></div>
-                </div>
-            </div>
-
             <div style="display:flex; gap:15px;">
                 <div class="form-group" style="flex:1;"><label>Costo ($)</label><input type="number" id="prod-costo" placeholder="0.00" oninput="calculateMargin()"></div>
                 <div class="form-group" style="flex:1;"><label>Venta ($)</label><input type="number" id="prod-venta" placeholder="0.00" oninput="calculateMargin()"></div>
@@ -856,17 +836,23 @@
             { id: 4, nombre: "Lápiz HB", precioCosto: 2.0, precioVenta: 5.0, stock: 50, categoria: "Papelería", barcode: "12345678" }
         ];
 
-        let productos = JSON.parse(localStorage.getItem('pos_p_pro')) || defProducts;
-        let ventas = JSON.parse(localStorage.getItem('pos_v_pro')) || [];
-        let pedidos = JSON.parse(localStorage.getItem('pos_pe_pro')) || [];
-        let gastos = JSON.parse(localStorage.getItem('pos_g_pro')) || [];
-        let propinas = JSON.parse(localStorage.getItem('pos_pr_pro')) || [];
+        function getSafeStorage(key, defaultVal) {
+            try { const val = localStorage.getItem(key); return val ? JSON.parse(val) : defaultVal; } 
+            catch(e) { console.error('Data error in ' + key, e); return defaultVal; }
+        }
+
+        let productos = getSafeStorage('pos_p_pro', defProducts);
+        let ventas = getSafeStorage('pos_v_pro', []);
+        let pedidos = getSafeStorage('pos_pe_pro', []);
+        let gastos = getSafeStorage('pos_g_pro', []);
+        let propinas = getSafeStorage('pos_pr_pro', []);
         
-        let distribuciones = JSON.parse(localStorage.getItem('pos_distrib')) || [ { id: 1, label: "Mejora", pct: 15 }, { id: 2, label: "Servicio", pct: 45 }, { id: 3, label: "Propia", pct: 40 } ];
-        let waTemplates = JSON.parse(localStorage.getItem('pos_wa_templates')) || [ "¡Hola! 👋 Somos de PrintCenter. Aquí tienes tu cotización:\n\n{detalles}\nTotal: {total}\n\n¡Quedamos a tus órdenes!", "Hola, te compartimos tu cotización de PrintCenter:\n{detalles}\n\nEl total es de {total}. ¿Te gustaría confirmar el pedido?", "", "", "" ];
-        let currentWAQuote = null; let ajustesSaldo = JSON.parse(localStorage.getItem('pos_ajustes_saldo')) || { costo: 0, gastos: 0 };
+        let distribuciones = getSafeStorage('pos_distrib', [ { id: 1, label: "Mejora", pct: 15 }, { id: 2, label: "Servicio", pct: 45 }, { id: 3, label: "Propia", pct: 40 } ]);
+        let waTemplates = getSafeStorage('pos_wa_templates', [ "¡Hola! 👋 Somos de PrintCenter. Aquí tienes tu cotización:\n\n{detalles}\nTotal: {total}\n\n¡Quedamos a tus órdenes!", "Hola, te compartimos tu cotización de PrintCenter:\n{detalles}\n\nEl total es de {total}. ¿Te gustaría confirmar el pedido?", "", "", "" ]);
+        let currentWAQuote = null; 
+        let ajustesSaldo = getSafeStorage('pos_ajustes_saldo', { costo: 0, gastos: 0 });
         
-        let clientesDirectorio = JSON.parse(localStorage.getItem('pos_clientes_dir')) || [];
+        let clientesDirectorio = getSafeStorage('pos_clientes_dir', []);
         clientesDirectorio = clientesDirectorio.map((c, i) => ({ id: c.id || Date.now() + i, nombre: c.nombre, telefono: c.telefono }));
         localStorage.setItem('pos_clientes_dir', JSON.stringify(clientesDirectorio));
 
@@ -2069,41 +2055,6 @@
             document.getElementById('daily-summary-content').style.display = 'block';
         }
 
-        function toggleCalcPaquete() {
-            const body = document.getElementById('calc-paquete-body');
-            const icon = document.getElementById('calc-icon');
-            if (body.style.display === 'none' || body.style.display === '') {
-                body.style.display = 'block';
-                icon.setAttribute('data-lucide', 'chevron-up');
-            } else {
-                body.style.display = 'none';
-                icon.setAttribute('data-lucide', 'chevron-down');
-            }
-            renderIcons();
-        }
-
-        function autoCalcularCosto() {
-            const costoPaquete = parseFloat(document.getElementById('calc-paquete-costo').value);
-            const unidades = parseFloat(document.getElementById('calc-paquete-unidades').value);
-            
-            if (costoPaquete > 0 && unidades > 0) {
-                const costoUnitario = costoPaquete / unidades;
-                document.getElementById('prod-costo').value = costoUnitario.toFixed(2);
-                
-                let sugerido = costoUnitario < 3 ? Math.ceil(costoUnitario * 2) : Math.ceil(costoUnitario * 1.5 * 2) / 2; 
-
-                document.getElementById('calc-sugerencia').innerHTML = `
-                    Costo Unitario real: <b style="color:var(--text-primary);">$${costoUnitario.toFixed(2)}</b> <br>
-                    <div style="display:inline-block; margin-top:10px; padding:8px 16px; background:var(--card-bg); border-radius:10px; border:1px solid var(--border-color); cursor:pointer; color:var(--accent-color); font-weight:900; box-shadow:var(--shadow-sm); transition: transform 0.2s;" onclick="document.getElementById('prod-venta').value='${sugerido.toFixed(2)}'; calculateMargin();">
-                        <i data-lucide="zap" size="14" style="vertical-align:middle;"></i> Aplicar Sugerido: $${sugerido.toFixed(2)}
-                    </div>`;
-                renderIcons();
-                calculateMargin();
-            } else {
-                document.getElementById('calc-sugerencia').innerHTML = '';
-            }
-        }
-
         function calculateMargin() { const costo = parseFloat(document.getElementById('prod-costo').value); const venta = parseFloat(document.getElementById('prod-venta').value); const badge = document.getElementById('margin-result'); if (isNaN(costo) || isNaN(venta) || venta === 0) { badge.innerText = "Ingresa precios..."; badge.className = "margin-badge"; return; } const ganancia = venta - costo; const porcentaje = (ganancia / venta) * 100; if (ganancia >= 0) { badge.innerText = `Beneficio: $${ganancia.toFixed(2)} (${porcentaje.toFixed(1)}%)`; badge.className = "margin-badge positive"; } else { badge.innerText = `Pérdida: $${Math.abs(ganancia).toFixed(2)} (${porcentaje.toFixed(1)}%)`; badge.className = "margin-badge negative"; } }
         
         function renderInventory() { 
@@ -2168,12 +2119,6 @@
         function openProductModal(id = null) { 
             playSynthSound('modal'); 
             document.getElementById('product-modal').classList.add('active'); 
-            
-            document.getElementById('calc-paquete-body').style.display = 'none';
-            document.getElementById('calc-paquete-costo').value = '';
-            document.getElementById('calc-paquete-unidades').value = '';
-            document.getElementById('calc-sugerencia').innerHTML = '';
-            if(document.getElementById('calc-icon')) document.getElementById('calc-icon').setAttribute('data-lucide', 'chevron-down');
 
             if (id) { 
                 const p = productos.find(prod => prod.id === id); 
@@ -2205,21 +2150,17 @@
         
         function deleteProduct() { const id = parseInt(document.getElementById('prod-id').value); lastDeletedIndex = productos.findIndex(p => p.id === id); if (lastDeletedIndex > -1) { lastDeletedProduct = productos[lastDeletedIndex]; productos.splice(lastDeletedIndex, 1); saveToStorage(); closeProductModal(null); renderAll(); playSynthSound('delete'); showUndoToast('Producto borrado', undoDelete); } }
         
-        // Exportación Robusta de Imágenes para WebViews
         async function downloadTableAsPNG(elementId, fileName) {
             playSynthSound('modal');
-            showToast('Generando imagen de alta calidad...');
+            showToast('Generando reporte... Por favor no toques la pantalla.');
             
             const targetTab = document.getElementById('recursos');
             const wasHidden = !targetTab.classList.contains('active');
             
-            // Si la tabla está en una pestaña oculta, html2canvas no la verá. 
-            // La mostramos de manera invisible por un segundo para la foto.
             if (wasHidden) {
-                targetTab.style.display = 'block';
-                targetTab.style.position = 'absolute';
-                targetTab.style.top = '-9999px';
-                targetTab.style.visibility = 'hidden';
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                targetTab.classList.add('active');
+                await new Promise(resolve => setTimeout(resolve, 400));
             }
 
             const element = document.getElementById(elementId);
@@ -2227,35 +2168,54 @@
             try {
                 const canvas = await html2canvas(element, { 
                     backgroundColor: getComputedStyle(document.body).backgroundColor,
-                    scale: 2, // Retida definition para dispositivos móviles
+                    scale: 1, 
+                    useCORS: true,
                     logging: false,
-                    useCORS: true
+                    removeContainer: true
                 });
                 
-                const dataURL = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = dataURL;
-                link.download = `PrintCenter_${fileName}_${getLocalISO().slice(0,10)}.png`;
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
+                const dataURL = canvas.toDataURL('image/jpeg', 0.9); 
+                showImagePreviewModal(dataURL);
                 playSynthSound('save');
-                showToast('Imagen guardada en tu dispositivo');
+                
             } catch (error) {
-                console.error("Error capturando PNG:", error);
+                console.error("Error capturando la tabla:", error);
                 triggerError('configuracion');
-                showToast('Error al generar la imagen');
+                showToast('Error por falta de memoria RAM en el dispositivo.');
             } finally {
-                // Restauramos la pestaña a su estado original
                 if (wasHidden) {
-                    targetTab.style.display = '';
-                    targetTab.style.position = '';
-                    targetTab.style.top = '';
-                    targetTab.style.visibility = '';
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.getElementById('configuracion').classList.add('active');
                 }
             }
+        }
+
+        function showImagePreviewModal(base64Image) {
+            let modal = document.getElementById('export-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'export-preview-modal';
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="ios-modal" onclick="event.stopPropagation()" style="display:flex; flex-direction:column; max-height:85vh; padding-top:25px;">
+                        <div class="drag-handle"></div>
+                        <h2 style="font-weight:900; font-size:22px; margin-bottom:10px;"><i data-lucide="image" size="24" style="color:var(--accent-color); vertical-align:middle;"></i> ¡Imagen Lista!</h2>
+                        <div style="background:rgba(0,113,227,0.1); padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid rgba(0,113,227,0.2);">
+                            <p style="color:var(--text-primary); font-size:14px; font-weight:700; text-align:center; margin:0;">👇 <b>Mantén presionada</b> la imagen unos segundos para Guardarla en Fotos o Compartirla.</p>
+                        </div>
+                        <div style="flex:1; overflow-y:auto; background:var(--bg-color); border-radius:var(--radius-md); border:1px solid var(--border-color); padding:10px; margin-bottom:20px; text-align:center;">
+                            <img id="export-preview-img" style="max-width:100%; height:auto; border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); pointer-events:auto; touch-action:auto;">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%; padding:18px; font-size:16px;" onclick="document.getElementById('export-preview-modal').classList.remove('active')"><i data-lucide="check-circle" size="20" style="vertical-align:middle;"></i> Entendido</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.addEventListener('click', () => modal.classList.remove('active'));
+                if(typeof renderIcons === 'function') renderIcons();
+            }
+            
+            document.getElementById('export-preview-img').src = base64Image;
+            modal.classList.add('active');
         }
 
         function switchTab(tabId, el) { playSynthSound('click_tab'); document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active')); document.querySelectorAll('.sidebar-menu button').forEach(item => item.classList.remove('active')); document.getElementById(tabId).classList.add('active'); if(el) el.classList.add('active'); const tabsArr = ['ventas', 'pedidos', 'historial', 'recursos', 'reportes', 'inventario', 'clientes', 'configuracion']; const index = tabsArr.indexOf(tabId); if(index >= 0) { if (document.querySelectorAll('.tab-item')[index]) document.querySelectorAll('.tab-item')[index].classList.add('active'); if (document.querySelectorAll('.sidebar-menu button')[index]) document.querySelectorAll('.sidebar-menu button')[index].classList.add('active'); } const titles = { ventas: "Caja y Mostrador", pedidos: "Tablero Kanban", historial: "Archivo de Transacciones", recursos: "Control de Flujo", reportes: "Rendimiento Global", inventario: "Almacén", clientes: "Directorio de Clientes", configuracion: "Ajustes del Sistema" }; document.getElementById('header-title').innerText = titles[tabId]; if (tabId === 'reportes') setTimeout(renderReports, 50); if (tabId === 'pedidos') setTimeout(renderPedidos, 50); if (tabId === 'recursos') setTimeout(renderFinanzas, 50); if (tabId === 'clientes') setTimeout(renderClientesTab, 50); document.querySelector('.sidebar').classList.remove('mobile-open'); }
