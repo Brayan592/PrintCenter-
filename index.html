@@ -341,10 +341,6 @@
 
         <div class="main-content" id="main-scroll-area">
             
-            <div style="background: linear-gradient(135deg, var(--warning-color), #ffcc00); color: white; padding: 12px 24px; font-size: 14px; font-weight: 800; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(255,149,0,0.2);">
-                <i data-lucide="alert-triangle" size="18"></i> Aviso de Semana Santa: Operando temporalmente desde domicilio particular por mantenimiento de equipos.
-            </div>
-
             <header>
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <i data-lucide="menu" size="30" class="mobile-menu-btn" onclick="toggleSidebar()"></i>
@@ -2154,7 +2150,7 @@
         
         async function downloadTableAsPNG(elementId, fileName) {
             playSynthSound('modal');
-            showToast('Generando imagen de alta calidad... espere.');
+            showToast('Generando imagen... Por favor espera.');
             
             const targetTab = document.getElementById('recursos');
             const wasHidden = !targetTab.classList.contains('active');
@@ -2162,7 +2158,7 @@
             if (wasHidden) {
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
                 targetTab.classList.add('active');
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 400));
             }
 
             const element = document.getElementById(elementId);
@@ -2170,7 +2166,7 @@
             try {
                 const canvas = await html2canvas(element, { 
                     backgroundColor: getComputedStyle(document.body).backgroundColor || '#f5f5f7',
-                    scale: 2, 
+                    scale: 1.5, 
                     useCORS: true,
                     logging: false
                 });
@@ -2178,7 +2174,6 @@
                 canvas.toBlob(async (blob) => {
                     let handled = false;
 
-                    // 1. Intentar Web Share API (Abre menú nativo para Guardar en Galería)
                     if (navigator.share && navigator.canShare) {
                         const file = new File([blob], `PrintCenter_${fileName}.png`, { type: 'image/png' });
                         if (navigator.canShare({ files: [file] })) {
@@ -2189,7 +2184,7 @@
                                     text: 'Reporte generado desde PrintCenter Pro.'
                                 });
                                 playSynthSound('save');
-                                showToast('Menú nativo abierto.');
+                                showToast('Menú nativo abierto para guardar.');
                                 handled = true;
                             } catch (e) {
                                 console.log('Share cancelado o error:', e);
@@ -2197,27 +2192,25 @@
                         }
                     }
 
-                    // 2. Intentar Median API directa
-                    if (!handled && typeof median !== 'undefined' && median.share && median.share.downloadImage) {
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
+                    if (!handled) {
+                        const dataURL = canvas.toDataURL('image/png');
+                        if (typeof median !== 'undefined' && median.share && median.share.downloadImage) {
                             try {
-                                median.share.downloadImage({ base64: reader.result.split(',')[1] });
+                                median.share.downloadImage({ base64: dataURL.split(',')[1] });
                                 playSynthSound('save');
-                                showToast('¡Comando enviado a la galería!');
-                                handled = true;
+                                showToast('Enviado a descargas.');
                             } catch (err) {
-                                console.error('Error Median:', err);
+                                showImagePreviewModal(dataURL);
                             }
-                        };
-                        reader.readAsDataURL(blob);
-                    } else if (!handled) {
-                        // 3. Fallback visual
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                            showImagePreviewModal(reader.result);
-                        };
-                        reader.readAsDataURL(blob);
+                        } else {
+                            const a = document.createElement('a');
+                            a.href = dataURL;
+                            a.download = `PrintCenter_${fileName}.png`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            showToast('Descarga iniciada.');
+                        }
                     }
                 }, 'image/png');
                 
