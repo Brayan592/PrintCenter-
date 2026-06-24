@@ -336,7 +336,7 @@
                     <button onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="20"></i> Ajustes</button>
                 </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.011 Ultimate Premium</div>
+            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.12 Ultimate Premium</div>
         </div>
 
         <div class="main-content" id="main-scroll-area">
@@ -528,7 +528,7 @@
                     </div>
                     
                     <div style="text-align:center; color:var(--text-secondary); font-size:13px; font-weight:800; margin-top:40px; margin-bottom:10px; opacity:0.6; letter-spacing: 1px; animation: pulseGlow 2s infinite alternate;">
-                        PrintCenter Pro v20.26.06.011
+                        PrintCenter Pro v20.26.06.12
                     </div>
                 </div>
 
@@ -2149,7 +2149,7 @@
         
         async function downloadTableAsPNG(elementId, fileName) {
             playSynthSound('modal');
-            showToast('Generando imagen de alta calidad...');
+            showToast('Generando imagen... Por favor espera.');
             
             const targetTab = document.getElementById('recursos');
             const wasHidden = !targetTab.classList.contains('active');
@@ -2157,34 +2157,41 @@
             if (wasHidden) {
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
                 targetTab.classList.add('active');
-                await new Promise(resolve => setTimeout(resolve, 400));
+                await new Promise(resolve => setTimeout(resolve, 600));
             }
 
             const element = document.getElementById(elementId);
             
             try {
                 const canvas = await html2canvas(element, { 
-                    backgroundColor: getComputedStyle(document.body).backgroundColor,
+                    backgroundColor: getComputedStyle(document.body).backgroundColor || '#f5f5f7',
                     scale: 1.5, 
                     useCORS: true,
                     logging: false,
-                    removeContainer: true
+                    windowWidth: element.scrollWidth,
+                    windowHeight: element.scrollHeight
                 });
                 
                 const dataURL = canvas.toDataURL('image/png');
                 
                 if (typeof median !== 'undefined' && median.share && median.share.downloadImage) {
-                    median.share.downloadImage({ base64: dataURL.split(',')[1] });
-                    playSynthSound('save');
-                    showToast('¡Imagen guardada en tu galería!');
+                    try {
+                        const base64Data = dataURL.split(',')[1];
+                        median.share.downloadImage({ base64: base64Data });
+                        playSynthSound('save');
+                        showToast('¡Enviado a la galería nativa!');
+                    } catch (medianErr) {
+                        console.error("Error Median API:", medianErr);
+                        showImagePreviewModal(dataURL);
+                    }
                 } else {
                     showImagePreviewModal(dataURL);
                 }
                 
             } catch (error) {
-                console.error("Error capturando la tabla:", error);
+                console.error("Error html2canvas:", error);
                 triggerError('configuracion');
-                showToast('Error al generar la imagen.');
+                showToast('Error al generar la imagen. Intenta reiniciar la app.');
             } finally {
                 if (wasHidden) {
                     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
