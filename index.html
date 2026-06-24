@@ -336,10 +336,15 @@
                     <button onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="20"></i> Ajustes</button>
                 </div>
             </div>
-            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.12 Ultimate Premium</div>
+            <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.06.13 Ultimate Premium</div>
         </div>
 
         <div class="main-content" id="main-scroll-area">
+            
+            <div style="background: linear-gradient(135deg, var(--warning-color), #ffcc00); color: white; padding: 12px 24px; font-size: 14px; font-weight: 800; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(255,149,0,0.2);">
+                <i data-lucide="alert-triangle" size="18"></i> Aviso de Semana Santa: Operando temporalmente desde domicilio particular por mantenimiento de equipos.
+            </div>
+
             <header>
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <i data-lucide="menu" size="30" class="mobile-menu-btn" onclick="toggleSidebar()"></i>
@@ -528,7 +533,7 @@
                     </div>
                     
                     <div style="text-align:center; color:var(--text-secondary); font-size:13px; font-weight:800; margin-top:40px; margin-bottom:10px; opacity:0.6; letter-spacing: 1px; animation: pulseGlow 2s infinite alternate;">
-                        PrintCenter Pro v20.26.06.12
+                        PrintCenter Pro v20.26.06.13
                     </div>
                 </div>
 
@@ -2149,7 +2154,7 @@
         
         async function downloadTableAsPNG(elementId, fileName) {
             playSynthSound('modal');
-            showToast('Generando imagen... Por favor espera.');
+            showToast('Generando imagen de alta calidad... espere.');
             
             const targetTab = document.getElementById('recursos');
             const wasHidden = !targetTab.classList.contains('active');
@@ -2157,7 +2162,7 @@
             if (wasHidden) {
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
                 targetTab.classList.add('active');
-                await new Promise(resolve => setTimeout(resolve, 600));
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
 
             const element = document.getElementById(elementId);
@@ -2165,33 +2170,61 @@
             try {
                 const canvas = await html2canvas(element, { 
                     backgroundColor: getComputedStyle(document.body).backgroundColor || '#f5f5f7',
-                    scale: 1.5, 
+                    scale: 2, 
                     useCORS: true,
-                    logging: false,
-                    windowWidth: element.scrollWidth,
-                    windowHeight: element.scrollHeight
+                    logging: false
                 });
                 
-                const dataURL = canvas.toDataURL('image/png');
-                
-                if (typeof median !== 'undefined' && median.share && median.share.downloadImage) {
-                    try {
-                        const base64Data = dataURL.split(',')[1];
-                        median.share.downloadImage({ base64: base64Data });
-                        playSynthSound('save');
-                        showToast('¡Enviado a la galería nativa!');
-                    } catch (medianErr) {
-                        console.error("Error Median API:", medianErr);
-                        showImagePreviewModal(dataURL);
+                canvas.toBlob(async (blob) => {
+                    let handled = false;
+
+                    // 1. Intentar Web Share API (Abre menú nativo para Guardar en Galería)
+                    if (navigator.share && navigator.canShare) {
+                        const file = new File([blob], `PrintCenter_${fileName}.png`, { type: 'image/png' });
+                        if (navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Reporte Financiero',
+                                    text: 'Reporte generado desde PrintCenter Pro.'
+                                });
+                                playSynthSound('save');
+                                showToast('Menú nativo abierto.');
+                                handled = true;
+                            } catch (e) {
+                                console.log('Share cancelado o error:', e);
+                            }
+                        }
                     }
-                } else {
-                    showImagePreviewModal(dataURL);
-                }
+
+                    // 2. Intentar Median API directa
+                    if (!handled && typeof median !== 'undefined' && median.share && median.share.downloadImage) {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            try {
+                                median.share.downloadImage({ base64: reader.result.split(',')[1] });
+                                playSynthSound('save');
+                                showToast('¡Comando enviado a la galería!');
+                                handled = true;
+                            } catch (err) {
+                                console.error('Error Median:', err);
+                            }
+                        };
+                        reader.readAsDataURL(blob);
+                    } else if (!handled) {
+                        // 3. Fallback visual
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            showImagePreviewModal(reader.result);
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                }, 'image/png');
                 
             } catch (error) {
-                console.error("Error html2canvas:", error);
+                console.error("Error capturando:", error);
                 triggerError('configuracion');
-                showToast('Error al generar la imagen. Intenta reiniciar la app.');
+                showToast('Error al procesar la imagen.');
             } finally {
                 if (wasHidden) {
                     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
