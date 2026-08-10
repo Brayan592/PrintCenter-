@@ -12,7 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        html, body { overscroll-behavior-y: none; overscroll-behavior-x: none; }
+        /* FIX DE TOUCH PARA TABLETS */
+        html, body { overscroll-behavior: auto; }
+        
         :root {
             /* =========================================
                PALETA INTELIGENTE DE COLORES
@@ -100,7 +102,9 @@
            SISTEMA DE ROLES Y LOGIN
         ========================================= */
         .login-screen { position: fixed; inset: 0; z-index: 999999; background: rgba(245, 245, 247, 0.7); backdrop-filter: blur(50px) saturate(150%); -webkit-backdrop-filter: blur(50px) saturate(150%); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; filter: blur(25px); transform: scale(1.05); }
+        
+        /* FIX DE CORTINA INVISIBLE */
+        .login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; filter: blur(25px); transform: scale(1.05); display: none !important; z-index: -100; }
         
         #role-selector { display: flex; gap: 50px; margin-bottom: 40px; }
         .login-card { background: transparent; border: none; padding: 0; text-align: center; cursor: pointer; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 140px; box-shadow: none; opacity: 0.6; filter: grayscale(80%); }
@@ -120,9 +124,10 @@
         body:not(.role-empleado) .empleado-only-block { display: none !important; }
         body.role-empleado .empleado-only-block { display: block !important; }
 
-        /* SPLASH SCREEN PREMIUM */
+        /* SPLASH SCREEN PREMIUM - FIX CORTINA */
         #intro-splash { position: fixed; inset: 0; z-index: 999998; background: radial-gradient(circle at center, #ffffff 0%, var(--bg-color) 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        #intro-splash.fade-out { opacity: 0; transform: scale(1.1); filter: blur(20px); visibility: hidden; pointer-events: none; }
+        #intro-splash.fade-out { opacity: 0; transform: scale(1.1); filter: blur(20px); visibility: hidden; pointer-events: none; display: none !important; z-index: -100; }
+        
         .elegant-logo { display:flex; flex-direction:column; align-items:center; justify-content: center; position: relative; z-index: 2; height: 160px; width: 160px; background: rgba(255,255,255,0.6); border-radius: 40px; box-shadow: 0 20px 50px rgba(0, 113, 227, 0.15), inset 0 0 0 2px rgba(255,255,255,0.8); backdrop-filter: blur(20px); animation: floatPremium 3s ease-in-out infinite; }
         @keyframes floatPremium { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0, 113, 227, 0.25), inset 0 0 0 2px rgba(255,255,255,0.9); } }
         .elegant-logo i { color: var(--accent-color); animation: popIcon 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; filter: drop-shadow(0 15px 25px var(--accent-glow)); }
@@ -161,7 +166,7 @@
         .btn-rush:active { transform: scale(0.9); }
         .bell-dot-header { position: absolute; top: 0; right: 0; background: var(--danger-color); width: 14px; height: 14px; border-radius: 50%; display: none; border: 2px solid var(--glass-bg); animation: pulseAlert 2s infinite; }
         
-        /* TRANSICIONES DE PESTAÑAS (ULTRALIGERAS) */
+        /* TRANSICIONES DE PESTAÑAS */
         .tab-content { display: none; opacity: 0; }
         .tab-content.active { display: block; animation: tabEnterLight 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .tab-content.leaving { display: block !important; position: absolute; top: 0; left: 0; width: 100%; z-index: -1; animation: tabLeaveLight 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; }
@@ -543,40 +548,62 @@
         .spotlight-item-sub { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 
         /* =========================================
-           NIVEL 4: IA INTEGRADA Y DISEÑO MEJORADO
+           NIVEL 4: IA INTEGRADA Y DISEÑO MEJORADO (WIDGET FLOTANTE)
         ========================================= */
-        .ai-modal-box { background: var(--card-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); width: 100%; max-width: 480px; border-radius: var(--radius-xl); padding: 0; box-shadow: 0 30px 60px rgba(175, 82, 222, 0.2); transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); border: 1px solid rgba(175, 82, 222, 0.3); display: flex; flex-direction: column; max-height: 85vh; overflow: hidden; }
-        .modal-overlay.active .ai-modal-box { transform: scale(1) translateY(0); }
+        .ai-tab-layout { display: flex; flex-direction: column; height: calc(100vh - 110px); width: 100%; margin: 0; background: radial-gradient(circle at top left, #ffffff 0%, #f0f0f5 100%); border-radius: var(--radius-lg); overflow: hidden; position: relative; border: 1px solid var(--glass-border); box-shadow: inset 0 0 20px rgba(0,0,0,0.02); }
         
-        .ai-header { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--purple-color), #d082f0); padding: 25px 30px; color: white; }
+        .ai-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 30px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid rgba(0,0,0,0.03); z-index: 10; position: absolute; top: 0; left: 0; right: 0; }
+        
         .ai-header-left { display: flex; align-items: center; gap: 15px; }
-        .ai-icon-pulse { background: white; color: var(--purple-color); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(255,255,255,0.4); animation: pulseAlert 2s infinite; }
+        .ai-icon-pulse { background: linear-gradient(135deg, var(--purple-color), #d082f0); color: white; width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px var(--purple-glow); animation: floatPremium 3s ease-in-out infinite; }
+        .ai-icon-pulse.mostrador-icon { background: linear-gradient(135deg, var(--accent-color), #00c6ff); box-shadow: 0 10px 20px var(--accent-glow); }
         
-        .ai-chat-area { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 18px; background: var(--bg-color); }
+        .ai-chat-area { flex: 1; overflow-y: auto; padding: 110px 40px 160px 40px; display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth; }
         
-        /* DISEÑO DE BURBUJAS MEJORADO CON MÁS DRAMATISMO */
-        .ai-bubble { background: linear-gradient(to bottom right, var(--card-bg), #fafafa); padding: 18px 22px; border-radius: 20px; border-top-left-radius: 4px; max-width: 90%; font-size: 15px; font-weight: 600; line-height: 1.5; color: var(--text-primary); align-self: flex-start; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid rgba(175, 82, 222, 0.2); animation: slideUpSmooth 0.3s ease forwards; position: relative;}
-        .ai-bubble::before { content: ''; position: absolute; left:-1px; top:-1px; bottom:-1px; width: 4px; background: var(--purple-color); border-radius: 4px 0 0 4px; opacity: 0.5;}
+        .ai-bubble { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); padding: 20px 26px; border-radius: 24px; border-top-left-radius: 4px; max-width: 80%; font-size: 16px; font-weight: 600; color: var(--text-primary); align-self: flex-start; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid rgba(255,255,255,0.8); position: relative; margin-left: 20px;}
+        .ai-bubble::before { content: '✨'; position: absolute; left: -28px; top: -10px; font-size: 16px; background: white; color: var(--purple-color); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid var(--glass-border); z-index: 2; }
         
-        .user-bubble { background: linear-gradient(135deg, #1d1d1f, #434343); color: white; padding: 16px 22px; border-radius: 20px; border-top-right-radius: 4px; max-width: 85%; font-size: 15px; font-weight: 600; line-height: 1.4; align-self: flex-end; box-shadow: 0 8px 20px rgba(0,0,0,0.15); animation: slideUpSmooth 0.3s ease forwards; border: 1px solid #555; }
+        .ai-mostrador-bubble::before { content: '🛎️'; color: var(--accent-color); }
         
-        .ai-suggestions { padding: 15px 30px; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .user-bubble { background: var(--text-primary); color: white; padding: 18px 24px; border-radius: 24px; border-top-right-radius: 4px; max-width: 80%; font-size: 16px; font-weight: 500; align-self: flex-end; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); border: none; }
+        
+        /* INPUT FLOTANTE ESTILO ISLA DINÁMICA */
+        .ai-input-floating-wrapper { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 850px; z-index: 20; display: flex; flex-direction: column; gap: 12px; }
+        
+        .ai-suggestions { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 5px 5px 15px 5px; }
         .ai-suggestions::-webkit-scrollbar { display: none; }
-        .ai-chip { background: rgba(175, 82, 222, 0.05); border: 1px solid rgba(175, 82, 222, 0.3); color: var(--purple-color); padding: 12px 20px; border-radius: 100px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; flex: 0 0 auto; white-space: nowrap; }
-        .ai-chip:hover, .ai-chip:active { background: var(--purple-color); color: white; transform: translateY(-2px); box-shadow: 0 4px 15px var(--purple-glow); }
+        .ai-chip { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid white; color: var(--text-primary); padding: 12px 20px; border-radius: 100px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.3s; flex: 0 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .ai-chip:hover, .ai-chip:active { background: var(--text-primary); color: white; transform: translateY(-3px); }
         
-        /* DISEÑO DE TARJETAS INLINE MEJORADO */
-        .ai-inline-card { background: linear-gradient(to right, rgba(175, 82, 222, 0.05), var(--card-bg)); border-radius: var(--radius-sm); padding: 18px; margin-top: 12px; border: 1px solid rgba(175, 82, 222, 0.2); border-left: 4px solid var(--purple-color); width: 100%; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; cursor: default; position: relative;}
-        .ai-inline-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .ai-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-top: 10px; }
-        .ai-kpi-box { background: var(--card-bg); padding: 14px; border-radius: 10px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center;}
-        .ai-kpi-box small { font-size: 11px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .ai-kpi-box div { font-size: 20px; font-weight: 900; color: var(--accent-color); margin-top: 6px; letter-spacing: -0.5px;}
-        .ai-chart-container { position: relative; height: 200px; width: 100%; margin-top: 15px; background: var(--card-bg); border-radius: 10px; padding: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
+        .ai-input-wrap { display: flex; gap: 12px; padding: 12px 15px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-radius: 100px; border: 1px solid white; box-shadow: 0 15px 40px rgba(0,0,0,0.12); align-items: center; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .ai-input-wrap:focus-within { background: white; box-shadow: 0 25px 50px rgba(0,0,0,0.18); transform: translateY(-3px); }
         
-        /* BOTÓN DE MÁS INFORMACIÓN */
-        .ai-more-info-btn { width: 100%; margin-top: 15px; padding: 12px; font-size: 13px; font-weight: 800; color: var(--purple-color); border-color: rgba(175, 82, 222, 0.3); border-radius: 8px; transition: all 0.3s; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .ai-more-info-btn:hover { background: var(--purple-color); color: white; box-shadow: 0 4px 15px var(--purple-glow); border-color: var(--purple-color); }
+        .ai-input-wrap input { flex: 1; border: none; background: transparent; padding: 10px 15px; font-size: 16px; font-weight: 600; outline: none; color: var(--text-primary); }
+        .ai-input-wrap input::placeholder { color: var(--text-secondary); font-weight: 600; }
+        
+        .ai-send-btn { background: var(--text-primary); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .ai-send-btn:hover { transform: scale(1.05); }
+        .ai-send-btn:active { transform: scale(0.95); }
+        .ai-send-btn.voice-btn { background: var(--input-bg); color: var(--text-primary); box-shadow: none; border: 1px solid var(--border-color); }
+        
+        /* TARJETAS DE RESPUESTA TIPO WIDGETS */
+        .ai-inline-card { background: white; border-radius: 20px; padding: 24px; margin-top: 15px; border: 1px solid var(--border-color); width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: transform 0.3s; }
+        .ai-inline-card:hover { transform: translateY(-4px); box-shadow: 0 15px 40px rgba(0,0,0,0.08); border-color: var(--accent-color); }
+        .ai-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 15px; }
+        .ai-kpi-box { background: var(--input-bg); padding: 16px; border-radius: 14px; text-align: left; }
+        .ai-kpi-box small { font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
+        .ai-kpi-box div { font-size: 24px; font-weight: 900; color: var(--text-primary); letter-spacing: -0.5px;}
+        .ai-chart-container { position: relative; height: 200px; width: 100%; margin-top: 15px; background: var(--input-bg); border-radius: 14px; padding: 15px; }
+        
+        .ai-more-info-btn { width: 100%; margin-top: 20px; padding: 16px; font-size: 14px; font-weight: 800; color: var(--text-primary); background: var(--input-bg); border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .ai-more-info-btn:hover { background: var(--text-primary); color: white; }
+
+        /* ELIMINAR EL EXTRAS DE RAG QUE YA NO ES NECESARIO */
+        .ai-typing-indicator { display: flex; gap: 4px; padding: 6px 4px; }
+        .ai-typing-indicator span { width: 8px; height: 8px; background-color: var(--text-secondary); border-radius: 50%; display: inline-block; animation: aiTyping 1.4s infinite ease-in-out both; }
+        .ai-typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .ai-typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes aiTyping { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         /* =========================================
            NIVEL 6: EXTRAS PARA IA INTELIGENTE (RAG)
@@ -596,8 +623,8 @@
         .ai-action-btn { background: var(--purple-color); color: white; border: none; padding: 10px 18px; border-radius: 100px; font-weight: 800; font-size: 13px; cursor: pointer; margin-top: 12px; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .ai-action-btn:hover { box-shadow: 0 4px 15px var(--purple-glow); transform: translateY(-2px); }
 
-        .ai-tab-layout { display: flex; flex-direction: column; height: calc(100vh - 150px); max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid rgba(175, 82, 222, 0.3); overflow: hidden; box-shadow: 0 20px 50px rgba(175, 82, 222, 0.15); }
-        @media (max-width: 768px) { .ai-tab-layout { height: calc(100vh - 240px); border-radius: var(--radius-md); } }
+        .ai-tab-layout { display: flex; flex-direction: column; height: calc(100vh - 130px); max-width: 100%; margin: 0; background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid rgba(175, 82, 222, 0.3); overflow: hidden; box-shadow: 0 10px 30px rgba(175, 82, 222, 0.1); }
+        @media (max-width: 768px) { .ai-tab-layout { height: calc(100vh - 210px); border-radius: var(--radius-md); } }
 
         /* =========================================
            NUEVO: POST-ITS Y NOTAS INTERNAS
@@ -690,8 +717,8 @@
                     <button onclick="switchTab('inventario', this)"><i data-lucide="package" size="20"></i> Inventario</button>
                     <button onclick="switchTab('clientes', this)"><i data-lucide="users" size="20"></i> Clientes</button>
                     
-                    <button class="admin-only" onclick="switchTab('ai-tab', this)"><i data-lucide="brain" size="20" style="color:var(--purple-color);"></i> IA Pro</button>
-                    <button class="empleado-only-flex" onclick="switchTab('ai-mostrador', this)"><i data-lucide="help-circle" size="20" style="color:var(--accent-color);"></i> Ayuda / Insumos</button>
+                    <button class="admin-only" onclick="switchTab('ai-tab', this)"><i data-lucide="brain" size="20" style="color:var(--purple-color);"></i> PrintCenter IA</button>
+                    <button class="empleado-only-flex" onclick="switchTab('ai-mostrador', this)"><i data-lucide="help-circle" size="20" style="color:var(--accent-color);"></i> PrintCenter Assistant</button>
                     <button class="admin-only" onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="20"></i> Ajustes</button>
                 </div>
             </div>
@@ -699,12 +726,12 @@
                 <button class="btn btn-outline" style="width:100%; margin-bottom:20px; padding:14px; font-size:14px;" onclick="logout()">
                     <i data-lucide="log-out" size="18"></i> Cerrar Sesión
                 </button>
-                <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.08.700 AI PRO :) </div>
+                <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.08.800 Vision IA :) </div>
             </div>
         </div>
 
         <div class="main-content" id="main-scroll-area">
-            <!-- ENCABEZADO SUPERIOR MODIFICADO -->
+            <!-- ENCABEZADO SUPERIOR -->
             <header>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <i data-lucide="menu" size="30" class="mobile-menu-btn" onclick="toggleSidebar()"></i>
@@ -721,13 +748,12 @@
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px;">
-                    <div class="btn-rush stagger-item admin-only" style="animation-delay: 0.1s; background: linear-gradient(135deg, var(--purple-color), #d082f0); color: white;" onclick="switchTab('ai-tab')" title="SmartControl IA Pro"><i data-lucide="sparkles" size="20"></i></div>
+                    <div class="btn-rush stagger-item admin-only" style="animation-delay: 0.1s; background: linear-gradient(135deg, var(--purple-color), #d082f0); color: white;" onclick="switchTab('ai-tab')" title="PrintCenter IA"><i data-lucide="sparkles" size="20"></i></div>
                     <div class="btn-rush stagger-item admin-only" style="background:var(--warning-color); position:relative; animation-delay: 0.1s;" onclick="openStockAlerts()" title="Alertas de Stock"><i data-lucide="bell" size="20"></i><div class="bell-dot-header" id="bell-dot"></div></div>
                     <div class="balance-pill stagger-item admin-only" style="animation-delay: 0.3s; background: linear-gradient(135deg, var(--success-color), #32d74b); color: white;" id="pill-caja-efectivo">Caja: $0.00</div>
                     <div class="balance-pill stagger-item admin-only" style="animation-delay: 0.4s; background: linear-gradient(135deg, var(--warning-color), #ffcc00); color: white;" id="pill-caja-cotizacion">Cotizado: $0.00</div>
                 </div>
             </header>
-            
             <div class="container">
                 <!-- PESTAÑA: DASHBOARD INTELIGENTE -->
                 <div id="dashboard" class="tab-content active fade-in">
@@ -738,7 +764,7 @@
                             <div class="greeting-date" id="dash-date">Cargando fecha...</div>
                         </div>
                         <div class="dashboard-header-actions">
-                            <button class="dash-action-btn admin-only" onclick="switchTab('ai-tab')" title="Asistente IA SmartControl">
+                            <button class="dash-action-btn admin-only" onclick="switchTab('ai-tab')" title="PrintCenter IA">
                                 <i data-lucide="sparkles" size="22" style="color:var(--purple-color);"></i>
                             </button>
                             <button class="dash-action-btn admin-only" onclick="openStockAlerts()" title="Notificaciones">
@@ -830,8 +856,9 @@
                     <div class="categories-chips stagger-item" style="animation-delay: 0.1s;"><div class="chip active" onclick="filterCategory('Todas', this)">Todas</div><div class="chip" onclick="filterCategory('Papelería', this)">Papelería</div><div class="chip" onclick="filterCategory('Impresiones', this)">Impresiones</div><div class="chip" onclick="filterCategory('Servicios', this)">Servicios</div><div class="chip" onclick="filterCategory('Juguetes', this)">Juguetes</div></div>
                     <div class="products-grid stagger-item" style="animation-delay: 0.2s;" id="products-list"></div>
                 </div>
-<!-- ==========================================
-                     PESTAÑA: SMARTCONTROL IA PRO (ADMIN)
+
+                <!-- ==========================================
+                     PESTAÑA: PRINTCENTER IA (ADMIN)
                 =========================================== -->
                 <div id="ai-tab" class="tab-content fade-in admin-only">
                     <div class="ai-tab-layout stagger-item">
@@ -839,22 +866,28 @@
                             <div class="ai-header-left">
                                 <div class="ai-icon-pulse"><i data-lucide="brain" size="24"></i></div>
                                 <div>
-                                    <h2 style="font-weight: 900; font-size: 24px; margin: 0; letter-spacing: -0.5px;">SmartControl IA Pro</h2>
+                                    <h2 style="font-weight: 900; font-size: 24px; margin: 0; letter-spacing: -0.5px;">PrintCenter IA</h2>
                                     <span style="font-size: 13px; font-weight: 700; opacity: 0.85; display:flex; align-items:center; gap:4px;">
                                         <span style="width:8px; height:8px; background:#34c759; border-radius:50%; display:inline-block; box-shadow: 0 0 8px #34c759;"></span> Sistema Cognitivo En Línea
                                     </span>
                                 </div>
                             </div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <span style="font-size:10px; font-weight:800; text-transform:uppercase; opacity:0.8; margin-bottom:4px;">Tipo de Voz</span>
+                                <select class="tts-voice-select" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); padding:6px 10px; border-radius:8px; outline:none; font-size:12px; font-weight:700; cursor:pointer;" onchange="changeVoice(this.value)">
+                                    <option value="" style="color:black;">Cargando voces...</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div class="ai-chat-area" id="ai-tab-chat-history">
                             <div class="ai-bubble">
-                                ¡Hola! Mi núcleo cognitivo ha sido actualizado. Ahora puedo analizar tu <b>inventario y stock en tiempo real</b>, generar tablas de datos comparativas y mostrarte reportes dinámicos. 
+                                ¡Hola! Soy PrintCenter IA, tu administrador virtual. Puedo analizar tu <b>inventario y stock en tiempo real</b>, generar tablas de datos comparativas y mostrarte reportes dinámicos. 
                                 <br><br>Prueba consultándome por existencias, movimientos o presiona "Más información" en mis reportes para abrir una vista gráfica detallada.
                             </div>
                         </div>
                         
-                        <!-- 15 MENSAJES PREDETERMINADOS (ADMIN) -->
+                        <!-- 25 MENSAJES PREDETERMINADOS (ADMIN) -->
                         <div class="ai-suggestions" id="ai-tab-suggestions-bar" style="overflow-x: auto; flex-wrap: nowrap; padding-bottom: 10px; justify-content: flex-start; border-top: 1px solid var(--border-color);">
                             <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('¿Cuánto vendí hoy?')">📊 Ventas hoy</button>
                             <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Genera el corte de caja')">🖨️ Corte Diario</button>
@@ -870,11 +903,27 @@
                             <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Hora pico de ventas')">⏰ Hora Pico</button>
                             <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Ventas con tarjeta')">💳 Pagos Tarjeta</button>
                             <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Ventas del mes')">🗓️ Ventas del Mes</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Ticket promedio')">🛒 Ticket Promedio</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Ventas de ayer')">📅 Ventas de Ayer</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Pedidos pendientes')">📋 Pedidos Pendientes</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Total clientes')">👥 Total de Clientes</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Gasto del mes')">📉 Gasto del Mes</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Productos archivados')">📂 Prod. Archivados</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Descuento de 10% al carrito')">✂️ Descuento Rápido</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Link de cobro')">📱 Link WhatsApp</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Utilidad del mes')">💵 Utilidad Mes</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Valor del inventario')">📊 Capital Invertido</button>
+                            <button class="ai-chip" style="flex-shrink: 0;" onclick="processAITabQuery('Progreso de meta')">🎯 Meta Mensual</button>
                         </div>
 
                         <div class="ai-input-wrap" style="border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
                             <input type="text" id="ai-tab-user-input" placeholder="Pregunta sobre stock, análisis gráfico, caja, inventario..." autocomplete="off" onkeydown="if(event.key==='Enter') submitAITabInput()">
-                            <button class="ai-send-btn" style="background:var(--input-bg); color:var(--text-primary); box-shadow:none;" id="ai-tab-voice-btn" onclick="toggleTabVoiceInput()" title="Dictar por Voz">
+                            
+                            <button class="ai-send-btn" style="background:var(--input-bg); color:var(--text-primary); box-shadow:none;" id="ai-tts-admin-btn" onclick="toggleTTSMode()" title="Activar/Desactivar Voz (Lectura)">
+                                <i data-lucide="volume-2" size="20"></i>
+                            </button>
+
+                            <button class="ai-send-btn" style="background:var(--input-bg); color:var(--text-primary); box-shadow:none;" id="ai-tab-voice-btn" onclick="toggleTabVoiceInput()" title="Dictar por Voz (Micrófono)">
                                 <i data-lucide="mic" size="20"></i>
                             </button>
                             <button class="ai-send-btn" onclick="submitAITabInput()" title="Enviar mensaje">
@@ -885,7 +934,7 @@
                 </div>
 
                 <!-- ==========================================
-                     PESTAÑA: ASISTENTE MOSTRADOR / CAPACITACIÓN
+                     PESTAÑA: PRINTCENTER ASSISTANT
                 =========================================== -->
                 <div id="ai-mostrador" class="tab-content fade-in">
                     <div class="ai-tab-layout stagger-item" style="border-color: rgba(0, 113, 227, 0.3); box-shadow: 0 20px 50px rgba(0, 113, 227, 0.15);">
@@ -893,42 +942,39 @@
                             <div class="ai-header-left">
                                 <div class="ai-icon-pulse" style="color: var(--accent-color); box-shadow: 0 0 20px rgba(255,255,255,0.6);"><i data-lucide="help-circle" size="24"></i></div>
                                 <div>
-                                    <h2 style="font-weight: 900; font-size: 24px; margin: 0; letter-spacing: -0.5px;">Asistente de Mostrador</h2>
+                                    <h2 style="font-weight: 900; font-size: 24px; margin: 0; letter-spacing: -0.5px;">PrintCenter Assistant</h2>
                                     <span style="font-size: 13px; font-weight: 700; opacity: 0.85; display:flex; align-items:center; gap:4px;">
                                         <span style="width:8px; height:8px; background:#34c759; border-radius:50%; display:inline-block;"></span> Consulta Inteligente Activa
                                     </span>
                                 </div>
                             </div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <span style="font-size:10px; font-weight:800; text-transform:uppercase; opacity:0.8; margin-bottom:4px;">Tipo de Voz</span>
+                                <select class="tts-voice-select" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); padding:6px 10px; border-radius:8px; outline:none; font-size:12px; font-weight:700; cursor:pointer;" onchange="changeVoice(this.value)">
+                                    <option value="" style="color:black;">Cargando voces...</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div class="ai-chat-area" id="ai-mostrador-chat-history">
-                            <div class="ai-bubble">
-                                ¡Hola! Soy tu asistente de mostrador. Estoy conectado al almacén para decirte exactamente qué hay en existencia y ayudarte con los procesos de la caja.
+                            <div class="ai-bubble ai-mostrador-bubble">
+                                ¡Hola! Soy PrintCenter Assistant. Estoy conectado al almacén para decirte exactamente qué hay en existencia, calcular precios fraccionados y ayudarte con los procesos de la caja.
                                 <br><br>Pregúntame por insumos o dudas del sistema.
                             </div>
                         </div>
                         
-                        <!-- 15 PREGUNTAS ESTÁNDAR PARA EL MOSTRADOR -->
+                        <!-- BOTONES DINÁMICOS ADMINISTRADOS DESDE CONFIGURACIÓN -->
                         <div class="ai-suggestions" id="ai-mostrador-suggestions-bar" style="overflow-x: auto; flex-wrap: nowrap; padding-bottom: 10px; justify-content: flex-start; border-top: 1px solid var(--border-color);">
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo cobro con tarjeta?')">💳 Cobrar con Tarjeta</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo checo el stock?')">📦 Consultar Stock</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo fiar o dejar pendiente?')">⏳ Dejar Pendiente / Fiar</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo busco un insumo o producto?')">🔍 Buscar Insumo</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Dónde encuentro el papel couche?')">📄 Buscar Papel Couche</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Dónde están los engargolados?')">📘 Buscar Engargolados</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo agrego un cliente nuevo?')">👥 Nuevo Cliente</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo creo una cotización?')">📝 Crear Cotización</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo elimino algo del carrito?')">🗑️ Borrar del Carrito</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Qué hago si se atasca la impresora?')">🖨️ Error de Impresora</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo paso un pedido a entregado?')">✅ Entregar Pedido</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo registro un abono?')">💰 Registrar Abono</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo dejo un recado interno?')">📌 Crear Nota/Recado</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo aplico un descuento?')">📉 Aplicar Descuento</button>
-                            <button class="ai-chip" style="color:var(--accent-color); border-color:rgba(0,113,227,0.3); background:rgba(0,113,227,0.05);" onclick="processAIMostradorQuery('¿Cómo reimprimo un ticket?')">🧾 Reimprimir Ticket</button>
+                            <!-- Se llena con JavaScript en base a la configuración del Admin -->
                         </div>
 
                         <div class="ai-input-wrap" style="border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
                             <input type="text" id="ai-mostrador-user-input" placeholder="Pregunta cómo usar el sistema o buscar material..." autocomplete="off" onkeydown="if(event.key==='Enter') submitAIMostradorInput()">
+                            
+                            <button class="ai-send-btn" style="background:var(--input-bg); color:var(--text-primary); box-shadow:none;" id="ai-tts-mostrador-btn" onclick="toggleTTSMode()" title="Activar/Desactivar Voz (Lectura)">
+                                <i data-lucide="volume-2" size="20"></i>
+                            </button>
+
                             <button class="ai-send-btn" style="background:var(--accent-color);" onclick="submitAIMostradorInput()" title="Enviar mensaje">
                                 <i data-lucide="send" size="20"></i>
                             </button>
@@ -1143,6 +1189,9 @@
                             <button onclick="switchSettingsPane('cfg-wa', this)"><i data-lucide="message-square" size="20" style="vertical-align:middle; margin-right:10px; color:#25D366;"></i> WhatsApp</button>
                             <button onclick="switchSettingsPane('cfg-dist', this)"><i data-lucide="pie-chart" size="20" style="vertical-align:middle; margin-right:10px; color:var(--warning-color);"></i> Finanzas</button>
                             <button onclick="switchSettingsPane('cfg-datos', this)"><i data-lucide="hard-drive" size="20" style="vertical-align:middle; margin-right:10px; color:var(--danger-color);"></i> Respaldo</button>
+                            
+                            <!-- NUEVA PESTAÑA PARA ADMINISTRAR LA IA -->
+                            <button onclick="switchSettingsPane('cfg-ai', this)"><i data-lucide="bot" size="20" style="vertical-align:middle; margin-right:10px; color:var(--accent-color);"></i> IA Ayuda</button>
                         </div>
                         
                         <div class="settings-pane active" id="cfg-tienda">
@@ -1207,6 +1256,24 @@
                             <button class="btn btn-warning" style="width:100%; margin-top:20px;" onclick="saveConfigDistribucionJuguetes()"><i data-lucide="save" size="20"></i> Guardar Juguetes</button>
                         </div>
 
+                        <!-- NUEVO PANEL: CONFIGURACIÓN IA -->
+                        <div class="settings-pane" id="cfg-ai">
+                            <h3 style="margin-bottom: 15px; font-size:26px; font-weight:900;">Ayuda Rápida (Mostrador)</h3>
+                            <p style="font-size:15px; color:var(--text-secondary); margin-bottom:24px; font-weight:600;">Administra los botones de preguntas predefinidas para tus empleados en PrintCenter Assistant.</p>
+                            
+                            <div id="ai-questions-config-list" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                                <!-- Se llena con JS -->
+                            </div>
+                            
+                            <div style="display:flex; gap:10px; margin-bottom: 25px; flex-wrap: wrap;">
+                                <input type="text" id="ai-q-title" placeholder="Título (Ej. 💳 Cobrar)" style="flex:1; background:var(--input-bg); border:none; padding:16px; border-radius:var(--radius-sm); font-weight:700;">
+                                <input type="text" id="ai-q-query" placeholder="Pregunta que procesará la IA..." style="flex:2; background:var(--input-bg); border:none; padding:16px; border-radius:var(--radius-sm); font-weight:700;">
+                                <button class="btn btn-secondary" onclick="addAIConfigQuestion()"><i data-lucide="plus"></i> Añadir</button>
+                            </div>
+                            
+                            <button class="btn btn-primary" style="width:100%; margin-bottom: 45px;" onclick="saveAIConfigQuestions()"><i data-lucide="save" size="20"></i> Guardar Configuración IA</button>
+                        </div>
+
                         <div class="settings-pane" id="cfg-datos">
                             <h3 style="margin-bottom: 24px; font-size:26px; font-weight:900;">Respaldo y Seguridad</h3>
                             <button class="btn btn-secondary" style="width:100%; margin-bottom:18px; padding:22px; font-size:16px;" onclick="exportData()"><i data-lucide="download" size="22"></i> Exportar Copia JSON</button>
@@ -1215,11 +1282,10 @@
                         </div>
                     </div>
                 </div>
-</div> <!-- Cierre de .container -->
+            </div> <!-- Cierre de .container -->
         </div> <!-- Cierre de .main-content -->
     </div> <!-- Cierre de .app-layout -->
-
-    <!-- ==========================================
+<!-- ==========================================
          MODALES DE LA APLICACIÓN
     =========================================== -->
     <div class="modal-overlay" id="cart-modal">
@@ -1248,9 +1314,7 @@
             </div>
 
             <!-- Lista de Productos -->
-            <div class="cart-body-pro" id="modern-cart-list">
-                <!-- Se llena con JavaScript -->
-            </div>
+            <div class="cart-body-pro" id="modern-cart-list"></div>
 
             <!-- Controles Inferiores y Totales -->
             <div class="cart-footer-pro">
@@ -1308,11 +1372,10 @@
             </div>
         </div>
     </div>
-    <!-- MODAL PARA POST-ITS / NOTAS -->
+    
+    <!-- MODALES SECUNDARIOS -->
     <div class="modal-overlay" id="nota-modal"><div class="ios-modal" onclick="event.stopPropagation()"><div class="drag-handle"></div><h2 style="font-weight:900; font-size:24px; margin-bottom:15px;"><i data-lucide="sticky-note" size="24" style="color:var(--warning-color); vertical-align:middle;"></i> Nueva Tarea / Nota</h2><div class="form-group"><label>Escribe tu recado</label><textarea id="nota-texto" rows="3" placeholder="Ej. Imprimir lonas urgentes, comprar papel bond..."></textarea></div><div class="form-group"><label>Color del Post-it</label><div style="display:flex; gap:10px;"><button class="btn btn-nota-color" style="flex:1; background:linear-gradient(135deg, #fef08a, #fde047); color:#854d0e; padding:12px; opacity:1; transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.2);" onclick="selectNotaColor('post-it-yellow', this)">Amarillo</button><button class="btn btn-nota-color" style="flex:1; background:linear-gradient(135deg, #bae6fd, #7dd3fc); color:#1e3a8a; padding:12px; opacity:0.5;" onclick="selectNotaColor('post-it-blue', this)">Azul</button><button class="btn btn-nota-color" style="flex:1; background:linear-gradient(135deg, #fbcfe8, #f472b6); color:#831843; padding:12px; opacity:0.5;" onclick="selectNotaColor('post-it-pink', this)">Rosa</button><button class="btn btn-nota-color" style="flex:1; background:linear-gradient(135deg, #bbf7d0, #86efac); color:#14532d; padding:12px; opacity:0.5;" onclick="selectNotaColor('post-it-green', this)">Verde</button></div></div><input type="hidden" id="nota-color-sel" value="post-it-yellow"><button class="btn btn-warning" style="width:100%; margin-bottom:12px; padding:18px; font-size:16px;" onclick="guardarNota()"><i data-lucide="pin" size="20"></i> Fijar Nota</button><button class="btn btn-outline" style="width:100%; padding:16px;" onclick="closeNotaModal()">Cancelar</button></div></div>
-    
     <div class="modal-overlay" id="qty-modal"><div class="ios-modal" id="qty-modal-content" onclick="event.stopPropagation()"><div class="drag-handle"></div><h2 style="font-weight:900; font-size:24px; margin-bottom:10px;">¿Cuántos deseas agregar?</h2><h3 id="qty-prod-name" style="color:var(--accent-color); margin-bottom:20px; font-size: 16px;"></h3><input type="hidden" id="qty-prod-id"><div style="display:flex; align-items:center; gap:15px; margin-bottom: 25px;"><input type="range" id="qty-slider" min="1" max="100" value="1" oninput="updateQtyInput(this.value)" style="flex:1;"><input type="number" id="qty-input" value="1" oninput="updateQtySlider(this.value)" style="width:80px; font-size:20px; font-weight:900; text-align:center; padding:10px; border-radius:12px; border:1px solid var(--border-color); background:var(--input-bg);"></div><div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom: 25px;"><button class="btn btn-secondary" style="padding:12px; font-size:16px; box-shadow:none;" onclick="setQtyVal(5)">5</button><button class="btn btn-secondary" style="padding:12px; font-size:16px; box-shadow:none;" onclick="setQtyVal(10)">10</button><button class="btn btn-secondary" style="padding:12px; font-size:16px; box-shadow:none;" onclick="setQtyVal(20)">20</button><button class="btn btn-secondary" style="padding:12px; font-size:16px; box-shadow:none;" onclick="setQtyVal(50)">50</button></div><button class="btn btn-primary" style="width:100%; padding:18px; font-size:18px;" onclick="confirmAddQty()"><i data-lucide="check-circle" size="20"></i> Agregar al Carrito</button><button class="btn btn-outline" style="width:100%; margin-top:12px; padding:16px;" onclick="closeQtyModal()">Cancelar</button></div></div>
-    
     <div class="modal-overlay" id="convert-quote-modal"><div class="ios-modal" onclick="event.stopPropagation()"><div class="drag-handle"></div><h2 style="font-weight:900; font-size:24px; margin-bottom:15px;"><i data-lucide="zap" size="24" style="color:var(--success-color); vertical-align:middle;"></i> Cobrar Operación</h2><p style="color:var(--text-secondary); font-size:15px; font-weight:600; margin-bottom:25px;">¿Con qué fecha deseas registrar este ingreso en tus métricas y finanzas?</p><button class="btn btn-primary" style="width:100%; margin-bottom:12px; font-size:16px; padding:18px; background:var(--success-color); box-shadow: 0 8px 20px var(--success-glow);" onclick="confirmConvertQuote('hoy')"><i data-lucide="calendar-check" size="20"></i> Ingresar con Fecha de Hoy</button><button class="btn btn-secondary" style="width:100%; margin-bottom:12px; font-size:16px; padding:18px;" onclick="confirmConvertQuote('original')"><i data-lucide="clock" size="20"></i> Usar Fecha Original</button><button class="btn btn-outline" style="width:100%; padding:16px;" onclick="closeConvertQuoteModal()">Cancelar</button></div></div>
     <div class="modal-overlay" id="cliente-modal"><div class="ios-modal" onclick="event.stopPropagation()"><div class="drag-handle"></div><h2 id="cliente-modal-title" style="font-weight:900; font-size:24px; margin-bottom:25px;">Nuevo Cliente</h2><input type="hidden" id="cliente-id"><div class="form-group"><label>Nombre Completo</label><input type="text" id="cliente-nombre" placeholder="Ej. Juan Pérez"></div><div class="form-group"><label>WhatsApp / Teléfono</label><input type="tel" id="cliente-telefono" placeholder="10 dígitos"></div><button class="btn btn-primary" style="width:100%; margin-top:15px; padding:18px; font-size:16px; background:var(--purple-color); box-shadow:0 8px 20px var(--purple-glow);" onclick="saveClienteDirectorio()"><i data-lucide="save" size="20"></i> Guardar Cliente</button><button class="btn btn-secondary admin-only" id="btn-delete-cliente" style="width:100%; margin-top:12px; color:var(--danger-color);" onclick="deleteClienteDirectorio()"><i data-lucide="trash" size="18"></i> Eliminar Cliente</button><button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeClienteModal()">Cancelar</button></div></div>
     <div class="modal-overlay" id="wa-modal"><div class="ios-modal" onclick="event.stopPropagation()"><div class="drag-handle"></div><h2 style="font-weight:900; font-size:24px; margin-bottom:20px;">📲 Enviar Cotización</h2><div class="form-group"><label>Número de WhatsApp</label><input type="number" id="wa-numero" placeholder="Ej. 5512345678"></div><div class="form-group"><label>Elegir Plantilla</label><select id="wa-template-select" style="padding:16px; font-size:15px; font-weight:700;"></select></div><button class="btn btn-primary" style="width:100%; margin-bottom:12px; background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 8px 20px rgba(37,211,102,0.3); font-size:16px; padding:18px;" onclick="sendWhatsApp()"><i data-lucide="send" size="20"></i> Enviar WhatsApp</button><button class="btn btn-outline" style="width:100%; padding:16px;" onclick="closeWAModal(null)">Cancelar</button></div></div>
@@ -1338,21 +1401,6 @@
         </div>
     </div>
 
-    <!-- TAB BAR INFERIOR (MÓVIL / TABLETS) -->
-    <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('dashboard', this)"><i data-lucide="layout-dashboard" size="24"></i><span>Inicio</span></div>
-        <div class="tab-item" onclick="switchTab('ventas', this)"><i data-lucide="shopping-cart" size="24"></i><span>Ventas</span></div>
-        <div class="tab-item" onclick="switchTab('pedidos', this)"><i data-lucide="columns" size="24"></i><span>Kanban</span></div>
-        <div class="tab-item" onclick="switchTab('historial', this)"><i data-lucide="clock" size="24"></i><span>Historial</span></div>
-        <div class="tab-item admin-only" onclick="switchTab('recursos', this)"><i data-lucide="landmark" size="24"></i><span>Finanzas</span></div>
-        <div class="tab-item admin-only" onclick="switchTab('reportes', this)"><i data-lucide="bar-chart-3" size="24"></i><span>Métricas</span></div>
-        <div class="tab-item" onclick="switchTab('inventario', this)"><i data-lucide="package" size="24"></i><span>Stock</span></div>
-        <div class="tab-item" onclick="switchTab('clientes', this)"><i data-lucide="users" size="24"></i><span>Clientes</span></div>
-        <div class="tab-item admin-only" onclick="switchTab('ai-tab', this)"><i data-lucide="brain" size="24"></i><span>IA Pro</span></div>
-        <div class="tab-item empleado-only-flex" onclick="switchTab('ai-mostrador', this)"><i data-lucide="help-circle" size="24"></i><span>Ayuda</span></div>
-        <div class="tab-item admin-only" onclick="switchTab('configuracion', this)"><i data-lucide="settings" size="24"></i><span>Ajustes</span></div>
-    </div>
-
 <script>
         const $ = id => document.getElementById(id);
         const $$ = sel => document.querySelectorAll(sel);
@@ -1368,6 +1416,9 @@
         let adminPin = localStorage.getItem('pos_admin_pin') || '1234';
         let metaMensual = getSafeStorage('pos_meta_mensual', 15000);
         let notasInternas = getSafeStorage('pos_notas_pro', []);
+        
+        // Estado Global del Text-To-Speech (Voz)
+        let isTTSActive = false;
 
         async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} }
         document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(); });
@@ -1387,6 +1438,26 @@
         let waTemplates = getSafeStorage('pos_wa_templates', [ "¡Hola! 👋 Somos de PrintCenter. Aquí tienes tu cotización:\n\n{detalles}\nTotal: {total}\n\n¡Quedamos a tus órdenes!", "", "", "", "" ]);
         let currentWAQuote = null, ajustesSaldo = getSafeStorage('pos_ajustes_saldo', { costo: 0, gastos: 0, costoJug: 0, gastosJug: 0 });
         let clientesDirectorio = getSafeStorage('pos_clientes_dir', []).map((c, i) => ({ id: c.id || Date.now() + i, nombre: c.nombre, telefono: c.telefono }));
+        
+        // Base de Datos de 15 Preguntas para PrintCenter Assistant
+        let aiMostradorQuestions = [
+            { id: 1, title: '💳 Cobrar Tarjeta', query: '¿Cómo cobro con tarjeta?', response: 'Para cobrar con tarjeta:<br>1. Arma el carrito.<br>2. Abre el carrito y selecciona <b>Tarjeta/Transf</b>.<br>3. Pasa la terminal y dale a "Cobrar y Finalizar".' },
+            { id: 2, title: '📦 Checar Stock', query: '¿Cómo checo el stock?', response: 'Usa la barra superior de "Buscar en todo" o ve a la pestaña de <b>Stock</b> para revisar las existencias exactas.' },
+            { id: 3, title: '📄 Papel Couche', query: '¿Dónde encuentro el papel couche?', response: '📍 <b>Ubicación:</b> Mueble 2, Cajón Inferior. Recuerda revisar que esté bien alineado antes de imprimir.' },
+            { id: 4, title: '🖨️ Atasco de Papel', query: '¿Qué hago si se atasca la impresora?', response: '⚠️ <b>¡No jales el papel fuerte!</b><br>1. Apaga la impresora.<br>2. Abre la tapa trasera o frontal según el modelo.<br>3. Retira el papel suavemente.' },
+            { id: 5, title: '💰 Lista Precios', query: '¿Dónde veo la lista de precios?', response: 'Puedes usar el buscador (icono de lupa arriba) o consultarme a mí escribiendo "cuánto cuesta X producto".' },
+            { id: 6, title: '⚠️ Faltan Insumos', query: '¿A quién le aviso si falta material?', response: 'Déjame una nota en el <b>Tablero de Notas</b> de la pantalla de Inicio para que el Administrador lo vea en su turno y lo resurta.' },
+            { id: 7, title: '📝 Nota en Pedido', query: '¿Cómo dejo un recado en un pedido?', response: 'Abre el carrito, toca en "Opciones extra" y escribe en el campo de <b>Nota del Pedido</b> antes de guardarlo.' },
+            { id: 8, title: '🗑️ Borrar Carrito', query: '¿Cómo borro algo del carrito?', response: 'Abre el carrito y <b>desliza el producto hacia la izquierda</b> para que aparezca el botón rojo de eliminar.' },
+            { id: 9, title: '🕒 Horario', query: '¿A qué hora cerramos?', response: 'Nuestro horario es hasta las 8:00 PM. Por favor empieza a limpiar y hacer tu corte 15 minutos antes.' },
+            { id: 10, title: '🔌 Apagar Todo', query: '¿Cuál es el proceso para apagar?', response: '1. Apaga y desconecta impresoras.<br>2. Cierra la sesión en este sistema.<br>3. Apaga luces y cierra con llave.' },
+            { id: 11, title: '📱 WhatsApp', query: '¿Cómo envío cotización por WA?', response: 'En el Kanban o en Ventas, crea la cotización y luego presiona el icono verde de WhatsApp para enviarla al cliente.' },
+            { id: 12, title: '📋 Fiar a Cliente', query: '¿Cómo anoto para fiar?', response: 'En el carrito, entra a "Opciones extra", escribe el nombre del cliente y selecciona <b>Fiar/Pendiente</b> como método de pago.' },
+            { id: 13, title: '💵 Entrega de Caja', query: '¿Cómo entrego la caja?', response: 'Cuenta todo el efectivo, sepáralo de los comprobantes de tarjeta y déjalo anotado en una <b>Nota del tablero</b>.' },
+            { id: 14, title: '🏷️ Mayoreo', query: '¿A partir de cuánto es mayoreo?', response: 'Revisa la pestaña de Stock. Si el cliente lleva mucho, puedes aplicarle un descuento rápido.' },
+            { id: 15, title: '❓ Duda General', query: 'No sé cómo cobrar algo', response: 'Si no está en el sistema, guárdalo temporalmente en la categoría "Servicios" y avisa en el tablero de notas para asignarle precio.' }
+        ];
+        localStorage.setItem('pos_ai_questions', JSON.stringify(aiMostradorQuestions));
 
         function playSynthSound(type) {
             setTimeout(() => {
@@ -1415,7 +1486,7 @@
         function triggerError(modalId) { playSynthSound('error'); const el = document.querySelector(`#${modalId} .ios-modal`) || document.querySelector(`#${modalId} .cart-sidebar`) || document.querySelector(`#${modalId}`); if(el) { el.classList.remove('shake-error'); void el.offsetWidth; el.classList.add('shake-error'); setTimeout(()=>el.classList.remove('shake-error'), 400); } }
 
         /* =======================================================
-           LÓGICA DE LOGIN Y PERMISOS
+           LÓGICA DE LOGIN Y PERMISOS CON FIX TOUCH
         ======================================================= */
         function checkLogin() {
             const loginScreen = $('login-screen');
@@ -1465,19 +1536,32 @@
                 lockText.innerText = 'Acceso Concedido';
                 
                 lockOverlay.style.display = 'flex';
+                lockOverlay.style.pointerEvents = 'auto'; // Bloquea la pantalla durante la animación
                 renderIcons(); 
                 
                 setTimeout(() => lockOverlay.style.opacity = '1', 10);
                 setTimeout(() => { $('lock-icon-container').style.transform = 'scale(1.2) translateY(-10px)'; }, 100);
 
                 setTimeout(() => {
+                    // 1. DESBLOQUEAR EL TOUCH INMEDIATAMENTE ANTES DE CUALQUIER CÁLCULO
                     lockOverlay.style.opacity = '0';
-                    finishLogin(role); 
-                    setTimeout(() => { lockOverlay.style.display = 'none'; $('lock-icon-container').style.transform = 'scale(1) translateY(0)'; }, 400);
+                    lockOverlay.style.pointerEvents = 'none'; 
+                    
+                    // 2. EJECUTAR EL CÓDIGO PESADO EN UN BLOQUE SEGURO
+                    try { 
+                        finishLogin(role); 
+                    } catch(e) { 
+                        console.warn("Se previno un cuelgue renderizando los reportes de Admin:", e); 
+                    }
+                    
+                    setTimeout(() => { 
+                        lockOverlay.style.display = 'none'; 
+                        $('lock-icon-container').style.transform = 'scale(1) translateY(0)'; 
+                    }, 400);
                 }, 1300);
 
             } else {
-                finishLogin(role);
+                try { finishLogin(role); } catch(e) { console.warn(e); }
                 setTimeout(() => fireConfetti(), 400);
             }
         }
@@ -1506,6 +1590,7 @@
             lockText.innerText = 'Cerrando Sesión...';
 
             lockOverlay.style.display = 'flex';
+            lockOverlay.style.pointerEvents = 'auto'; // Asegura que no haya clics fantasma al salir
             renderIcons(); 
             
             setTimeout(() => lockOverlay.style.opacity = '1', 10);
@@ -1515,9 +1600,17 @@
                 currentRole = null;
                 localStorage.removeItem('pos_user_role');
                 hidePinPad();
-                checkLogin();
+                
+                try { checkLogin(); } catch(e) { console.warn(e); }
+                
+                // LIBERAR TOUCH OBLIGATORIO
                 lockOverlay.style.opacity = '0';
-                setTimeout(() => { lockOverlay.style.display = 'none'; $('lock-icon-container').style.transform = 'scale(1) translateY(0)'; }, 400);
+                lockOverlay.style.pointerEvents = 'none'; 
+                
+                setTimeout(() => { 
+                    lockOverlay.style.display = 'none'; 
+                    $('lock-icon-container').style.transform = 'scale(1) translateY(0)'; 
+                }, 400);
             }, 1400);
         }
 
@@ -1563,9 +1656,27 @@
                 localStorage.setItem('pos_current_month', currentMonthTracker);
                 if(document.getElementById('finanzas-mes-selector') && !document.getElementById('finanzas-mes-selector').value) { document.getElementById('finanzas-mes-selector').value = currentMonthTracker; }
                 
-                updateGastosDropdown(); updateAjustesDropdown(); renderAll(); renderConfigInputs(); renderConfigInputsJuguetes(); renderConfigWA(); renderIcons(); initKanbanSortable(); 
+                updateGastosDropdown(); updateAjustesDropdown(); renderAll(); renderConfigInputs(); renderConfigInputsJuguetes(); renderConfigWA(); initKanbanSortable(); 
+                
+                const aiConfigPane = document.getElementById('cfg-ai');
+                if(aiConfigPane && !document.getElementById('ai-q-response')) {
+                    const queryInput = document.getElementById('ai-q-query');
+                    if(queryInput) {
+                        const respInput = document.createElement('textarea');
+                        respInput.id = 'ai-q-response';
+                        respInput.placeholder = 'Respuesta que dará la IA... (Puedes usar formato HTML básico)';
+                        respInput.className = 'form-group';
+                        respInput.style.cssText = 'width: 100%; background: var(--input-bg); border: none; padding: 16px; border-radius: var(--radius-sm); font-weight: 600; margin-bottom: 15px;';
+                        queryInput.parentNode.parentNode.insertBefore(respInput, queryInput.parentNode.nextSibling);
+                    }
+                }
+
+                renderAIConfigQuestions();
+                renderAIMostradorBar();
+
                 $$('.client-name').forEach(el => el.addEventListener('blur', () => { setTimeout(() => { $$('.client-suggestions').forEach(s => s.style.display = 'none'); }, 250); }));
                 initMarginCalculator();
+                renderIcons();
 
             } catch (error) {
                 console.error("Error interno:", error);
@@ -1592,7 +1703,6 @@
             board.innerHTML += `<div class="add-note-card fade-in" onclick="openNotaModal()"><i data-lucide="plus-circle" size="32" style="margin-bottom: 10px;"></i><span style="font-weight: 800;">Nueva Tarea</span></div>`;
             renderIcons();
 
-            // Lógica de alerta visual movida al Header
             const headerBadge = $('header-notas-badge');
             const notasBadgeAlert = $('notas-badge-alert');
             if(headerBadge) headerBadge.style.display = notasInternas.length > 0 ? 'inline-block' : 'none';
@@ -1638,7 +1748,7 @@
         ========================================= */
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSpotlight(); }
-            if (e.key === 'Escape') { closeSpotlight(null); closeAIModal(); }
+            if (e.key === 'Escape') { closeSpotlight(null); }
             if (e.key === 'Enter' && $('spotlight-overlay').classList.contains('active')) {
                 const firstResult = document.querySelector('.spotlight-item');
                 if (firstResult) firstResult.click();
@@ -1677,7 +1787,7 @@
             const bottomBtn = document.querySelector(`.tab-item[onclick*="${tabId}"]`); 
             if(bottomBtn) bottomBtn.classList.add('active'); 
             
-            const titles = { 'dashboard':'Inicio', 'ventas':'Ventas', 'pedidos':'Kanban Pedidos', 'historial':'Historial', 'recursos':'Finanzas', 'reportes':'Métricas', 'inventario':'Inventario', 'clientes':'Clientes', 'ai-tab':'SmartControl IA Pro', 'ai-mostrador': 'Ayuda Mostrador', 'configuracion':'Ajustes' }; 
+            const titles = { 'dashboard':'Inicio', 'ventas':'Ventas', 'pedidos':'Kanban Pedidos', 'historial':'Historial', 'recursos':'Finanzas', 'reportes':'Métricas', 'inventario':'Inventario', 'clientes':'Clientes', 'ai-tab':'PrintCenter IA', 'ai-mostrador': 'PrintCenter Assistant', 'configuracion':'Ajustes' }; 
             const headerTitle = $('header-title');
             if (headerTitle) headerTitle.innerText = titles[tabId] || 'PrintCenterPro'; 
             
@@ -1699,7 +1809,139 @@
         }
 
         /* =========================================
-           NUEVO: LÓGICA REFINADA IA MOSTRADOR 
+           LÓGICA DEL TEXT-TO-SPEECH (TTS) Y VOCES
+        ========================================= */
+        let aiVoices = [];
+        let selectedAIVoiceIndex = 0;
+
+        function loadAIVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            let esVoices = voices.filter(v => v.lang.startsWith('es')).sort((a, b) => a.lang.includes('MX') ? -1 : 1);
+            if (esVoices.length === 0) esVoices = voices; 
+            aiVoices = esVoices.slice(0, 5);
+
+            $$('.tts-voice-select').forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = '';
+                aiVoices.forEach((v, index) => {
+                    select.innerHTML += `<option value="${index}" style="color:black;">🗣️ Voz ${index + 1} (${v.name.substring(0, 10)}...)</option>`;
+                });
+                if(currentVal && currentVal < aiVoices.length) select.value = currentVal;
+            });
+        }
+
+        if (window.speechSynthesis) {
+            if ('onvoiceschanged' in window.speechSynthesis) {
+                window.speechSynthesis.onvoiceschanged = loadAIVoices;
+            } else {
+                setTimeout(loadAIVoices, 1000);
+            }
+        }
+
+        function changeVoice(index) {
+            selectedAIVoiceIndex = parseInt(index);
+            $$('.tts-voice-select').forEach(sel => sel.value = index);
+            showToast(`Voz ${parseInt(index) + 1} seleccionada`);
+            playSynthSound('click_tab');
+        }
+
+        function toggleTTSMode() {
+            isTTSActive = !isTTSActive;
+            const btnMostrador = $('ai-tts-mostrador-btn');
+            const btnAdmin = $('ai-tts-admin-btn');
+            
+            if (isTTSActive) {
+                if(btnMostrador) { btnMostrador.style.color = 'var(--accent-color)'; btnMostrador.classList.add('pulse-anim'); }
+                if(btnAdmin) { btnAdmin.style.color = 'var(--purple-color)'; btnAdmin.classList.add('pulse-anim'); }
+                showToast('Lectura en voz alta activada');
+                loadAIVoices();
+            } else {
+                window.speechSynthesis.cancel();
+                if(btnMostrador) { btnMostrador.style.color = 'var(--text-primary)'; btnMostrador.classList.remove('pulse-anim'); }
+                if(btnAdmin) { btnAdmin.style.color = 'var(--text-primary)'; btnAdmin.classList.remove('pulse-anim'); }
+                showToast('Lectura en voz alta desactivada');
+            }
+        }
+
+        function speakText(htmlStr) {
+            if(!isTTSActive) return;
+            window.speechSynthesis.cancel();
+            
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlStr;
+            const textToSpeak = tempDiv.textContent || tempDiv.innerText || "";
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            if(aiVoices.length > 0) {
+                utterance.voice = aiVoices[selectedAIVoiceIndex];
+            } else {
+                utterance.lang = 'es-MX';
+            }
+            utterance.rate = 1.0; 
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* =========================================
+           CONFIGURACIÓN PREGUNTAS IA (ADMIN)
+        ========================================= */
+        function renderAIConfigQuestions() {
+            const list = $('ai-questions-config-list');
+            if(!list) return;
+            list.innerHTML = '';
+            aiMostradorQuestions.forEach(q => {
+                list.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:12px 15px; border-radius:var(--radius-sm); border:1px solid var(--border-color); margin-bottom:8px;">
+                    <div>
+                        <div style="font-weight:800; font-size:14px; color:var(--text-primary);">${q.title}</div>
+                        <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">${q.query}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding:10px; color:var(--danger-color);" onclick="removeAIConfigQuestion(${q.id})"><i data-lucide="trash" size="16"></i></button>
+                </div>`;
+            });
+            renderIcons();
+            renderAIMostradorBar();
+        }
+
+        function addAIConfigQuestion() {
+            const title = $('ai-q-title').value.trim();
+            const query = $('ai-q-query').value.trim();
+            const responseInput = $('ai-q-response');
+            const responseText = responseInput ? responseInput.value.trim() : 'Respuesta genérica generada automáticamente.';
+
+            if(!title || !query) { showToast('Faltan título o pregunta para la IA'); return; }
+            aiMostradorQuestions.push({ id: Date.now(), title, query, response: responseText });
+            
+            $('ai-q-title').value = '';
+            $('ai-q-query').value = '';
+            if(responseInput) responseInput.value = '';
+
+            renderAIConfigQuestions();
+            playSynthSound('click_tab');
+        }
+
+        function removeAIConfigQuestion(id) {
+            aiMostradorQuestions = aiMostradorQuestions.filter(q => q.id !== id);
+            renderAIConfigQuestions();
+            playSynthSound('delete');
+        }
+
+        function saveAIConfigQuestions() {
+            localStorage.setItem('pos_ai_questions', JSON.stringify(aiMostradorQuestions));
+            showToast('Preguntas de IA actualizadas');
+            playSynthSound('save');
+        }
+
+        function renderAIMostradorBar() {
+            const bar = $('ai-mostrador-suggestions-bar');
+            if(!bar) return;
+            bar.innerHTML = '';
+            aiMostradorQuestions.forEach(q => {
+                bar.innerHTML += `<button class="ai-chip mostrador-chip" onclick="processAIMostradorQuery('${q.query}')">💡 ${q.title}</button>`;
+            });
+        }
+
+        /* =========================================
+           LÓGICA REFINADA IA MOSTRADOR 
         ========================================= */
         function submitAIMostradorInput() {
             const inputEl = $('ai-mostrador-user-input');
@@ -1713,16 +1955,15 @@
             const chat = $('ai-mostrador-chat-history');
             const typingId = 'typing-mostrador-' + Date.now();
             
-            // Animación de "pensando" para mayor realismo
-            chat.insertAdjacentHTML('beforeend', `<div class="ai-bubble" id="${typingId}"><div class="ai-typing-indicator"><span></span><span></span><span></span></div></div>`);
+            chat.insertAdjacentHTML('beforeend', `<div class="ai-bubble ai-mostrador-bubble" id="${typingId}"><div class="ai-typing-indicator"><span></span><span></span><span></span></div></div>`);
             chat.scrollTop = chat.scrollHeight;
 
-            // Tiempo artificial de análisis
             setTimeout(() => {
                 const target = $(typingId);
                 if(target) { target.innerHTML = html; }
                 chat.scrollTop = chat.scrollHeight;
                 playSynthSound('modal'); renderIcons();
+                speakText(html);
             }, 1200 + Math.random() * 800); 
         }
 
@@ -1735,7 +1976,13 @@
             const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
             let response = '';
 
-            // Lógica profunda de inventario/stock para mostrador
+            const dynamicMatch = aiMostradorQuestions.find(aiQ => q.includes(aiQ.query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
+            if (dynamicMatch && dynamicMatch.response) {
+                response = dynamicMatch.response;
+                typeAIMostradorResponse(response);
+                return;
+            }
+
             if(q.includes('cuanto') || q.includes('cuantas') || q.includes('hay') || q.includes('quedan') || q.includes('tenemos')) {
                 const prodName = q.replace(/cuanto|cuantas|hay|quedan|tenemos|de|el|la|los|las|stock|inventario|\?/g, '').trim();
                 if(prodName.length > 2) {
@@ -1744,48 +1991,14 @@
                         response = `He revisado el almacén. Actualmente tenemos <b style="font-size:18px; color:var(--accent-color);">${prod.stock} unidades</b> de <b>${prod.nombre}</b>.`;
                         if(prod.stock <= 5) response += `<br><br><span style="color:var(--danger-color); font-weight:800;">⚠️ Quedan muy pocos, por favor repórtalo para resurtir.</span>`;
                     } else {
-                        response = `No logro encontrar "${prodName}" en nuestro inventario. Por favor, revisa en el Mueble físico o pregunta directamente a Brayan.`;
+                        response = `No logro encontrar "${prodName}" en nuestro inventario. Por favor, revisa en el Mueble físico o pregunta directamente al administrador.`;
                     }
                     typeAIMostradorResponse(response);
                     return;
                 }
             }
 
-            // Preguntas predeterminadas del Mostrador
-            if(q.includes('cobro con tarjeta') || q.includes('cobrar con tarjeta')) {
-                response = 'Para cobrar con tarjeta:<br>1. Ve a <b>Ventas</b> y arma tu carrito.<br>2. Abre el carrito y selecciona <b>Tarjeta</b> en los botones inferiores.<br>3. Pasa la terminal y cuando se apruebe, dale a <b>Completar</b>.';
-            } else if(q.includes('fiar') || q.includes('dejar pendiente')) {
-                response = 'Para fiar o dejar pendiente:<br>1. En el carrito, selecciona <b>Fiar</b>.<br>2. <b>Obligatorio:</b> Escribe el nombre del cliente en opciones extra.<br>3. Dale a <b>Completar</b>. El pedido se irá a la pestaña <b>Kanban Pedidos</b> en "Esperando Cliente".';
-            } else if(q.includes('descuento')) {
-                response = 'Para aplicar descuento, debes pedir autorización al Administrador. Si la tienes, ajusta manualmente el precio editando el artículo en el carrito.';
-            } else if(q.includes('buscar papel') || q.includes('papel couche')) {
-                response = '📍 <b>Ubicación:</b> El papel Couché está en el <b>Mueble 2, Cajón Inferior</b>. Recuerda revisar que esté bien alineado antes de meterlo a la impresora.';
-            } else if(q.includes('engargolado') || q.includes('engargolados') || q.includes('espirales')) {
-                response = '📍 <b>Ubicación:</b> Las pastas y espirales están en el <b>Estante 1, Cajas transparentes</b>. La engargoladora está en la mesa de trabajo derecha.';
-            } else if(q.includes('insumo') || q.includes('buscar')) {
-                response = 'Para buscar insumos, puedes decirme: "Cuántas plumas quedan" o "Tenemos hojas de color". También puedes usar el buscador principal (Ctrl+K).';
-            } else if(q.includes('cliente nuevo') || q.includes('nuevo cliente') || q.includes('agrego un cliente')) {
-                response = 'Para agregar un cliente:<br>1. Ve a la pestaña <b>Clientes</b>.<br>2. Dale clic al botón azul <b>Nuevo Cliente</b>.<br>3. Llena su nombre y WhatsApp y dale a Guardar.';
-            } else if(q.includes('crear cotizacion') || q.includes('crear una cotizacion')) {
-                response = 'Para cotizar:<br>1. Agrega productos al carrito en <b>Ventas</b>.<br>2. Abre el carrito y despliega las <b>Opciones extra</b>.<br>3. Llena el nombre y dale al botón amarillo <b>Solo Cotizar</b>.';
-            } else if(q.includes('elimino algo del carrito') || q.includes('borrar del carrito')) {
-                response = 'Abre el carrito y <b>desliza el producto hacia la izquierda</b> (swipe) sobre el artículo para eliminarlo, o usa los botones de <b>-</b> para bajar la cantidad a cero.';
-            } else if(q.includes('atasca la impresora') || q.includes('error de impresora')) {
-                response = '⚠️ <b>¡No jales el papel fuerte!</b><br>1. Apaga la impresora.<br>2. Abre la tapa frontal y trasera.<br>3. Saca el papel suavemente siguiendo la ruta de los rodillos.<br>4. Si no sale, avísale a Brayan inmediatamente.';
-            } else if(q.includes('entregado') || q.includes('entregar pedido')) {
-                response = 'Ve a la pestaña <b>Kanban Pedidos</b>. Busca la tarjeta del cliente en "Imprimiendo" o "Esperando Cliente" y dale clic al botón verde de <b>Entregar</b> o arrástrala a la última columna.';
-            } else if(q.includes('registrar un abono') || q.includes('registrar abono')) {
-                response = 'Ve a <b>Kanban Pedidos</b>, busca el pedido en "Esperando Cliente" y dale al botón naranja <b>Abonar</b>. Escribe la cantidad y se restará de su deuda.';
-            } else if(q.includes('recado interno') || q.includes('nota')) {
-                response = 'Ve a la pestaña <b>Inicio</b> y baja hasta el <b>Tablero de Tareas</b>. Dale clic a <b>Nueva Tarea</b>, escribe el mensaje, elige el color y dale a Fijar Nota.';
-            } else if(q.includes('checo el stock') || q.includes('consultar stock')) {
-                response = 'Ve a la pestaña <b>Inventario / Stock</b>. Ahí puedes buscar cualquier producto y ver cuántas piezas quedan. O puedes preguntarme a mí directamente.';
-            } else if(q.includes('reimprimir un ticket') || q.includes('reimprimir ticket')) {
-                response = 'Ve a la pestaña <b>Historial</b>, busca la venta por fecha o nombre, ábrela dándole clic a la tarjeta y dale al botón azul de <b>Ticket</b>.';
-            } else {
-                response = 'No entendí muy bien la consulta. Estoy entrenado para revisar inventario (ej. "¿Cuánto papel queda?") o explicarte procesos operativos. ¿Intentas otra vez?';
-            }
-
+            response = 'No entendí muy bien la consulta. Estoy entrenado para revisar inventario (ej. "¿Cuánto papel queda?") o explicarte procesos operativos. ¿Intentas de nuevo o seleccionas un botón?';
             typeAIMostradorResponse(response);
         }
 
@@ -1823,12 +2036,12 @@
             chat.insertAdjacentHTML('beforeend', `<div class="ai-bubble" id="${typingId}"><div class="ai-typing-indicator"><span></span><span></span><span></span></div></div>`);
             chat.scrollTop = chat.scrollHeight;
 
-            // Tiempo artificial "pensando/analizando datos"
             setTimeout(() => {
                 const target = $(typingId);
                 if(target) { target.innerHTML = html; if(appendChart) appendChart(target); }
                 chat.scrollTop = chat.scrollHeight;
                 playSynthSound('modal'); renderIcons();
+                speakText(html);
             }, 1500 + Math.random() * 1000); 
         }
 
@@ -1842,7 +2055,7 @@
             const todayStr = getLocalISO().slice(0, 10);
 
             // ==========================================
-            // FASE 1: PROCESAR ESTADOS EN ESPERA 
+            // ESTADOS DE ESPERA (IA CONVERSACIONAL)
             // ==========================================
             if (aiTabState === 'esperando_cliente') {
                 aiTabState = null; 
@@ -1899,8 +2112,15 @@
                     const monto = parseFloat(montoMatch[0]);
                     gastos.push({ id: Date.now(), fecha: getLocalISO(), tipo: 'Diario', descripcion: 'Gasto por IA', monto: monto });
                     saveToStorage(); renderFinanzas();
-                    typeAITabResponse(`¡Guardado! Egreso registrado por <b style="color:var(--danger-color);">-$${monto.toFixed(2)}</b>. Quedará reflejado en las Finanzas inmediatamente.`);
-                } else { typeAITabResponse('No detecté un número válido. Operación cancelada, inténtalo de nuevo si lo requieres.'); }
+                    const html = `
+                    <div class="ai-inline-card" style="border-left-color: var(--danger-color);">
+                        <h4 style="margin-bottom:10px;"><i data-lucide="minus-circle" style="color:var(--danger-color);"></i> Egreso Registrado</h4>
+                        <div style="font-size:24px; font-weight:900; color:var(--danger-color); margin-top:10px;">-$${monto.toFixed(2)}</div>
+                        <p style="font-size:13px; color:var(--text-secondary); margin-top:5px;">Aplicado a los gastos generales de hoy.</p>
+                        <button class="ai-more-info-btn" onclick="switchTab('recursos')"><i data-lucide="landmark" size="14"></i> Ver historial de Finanzas</button>
+                    </div>`;
+                    typeAITabResponse(`¡Guardado exitosamente!` + html);
+                } else { typeAITabResponse('No detecté un número válido. Operación cancelada.'); }
                 return;
             }
 
@@ -1913,20 +2133,30 @@
                     const prod = productos.find(p => p.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(prodName));
                     if (prod) {
                         prod.stock += qty; saveToStorage(); renderInventory();
-                        typeAITabResponse(`Inventario actualizado con éxito. Agregué <b>${qty} unidades</b> a <span style="color:var(--accent-color); font-weight:800;">${prod.nombre}</span>.`);
+                        const html = `
+                        <div class="ai-inline-card">
+                            <h4 style="margin-bottom:10px;"><i data-lucide="package-plus" style="color:var(--accent-color);"></i> Inventario Actualizado</h4>
+                            <div class="ai-kpi-grid">
+                                <div class="ai-kpi-box"><small>Añadidos</small><div style="color:var(--success-color);">+${qty}</div></div>
+                                <div class="ai-kpi-box"><small>Nuevo Stock</small><div style="color:var(--text-primary);">${prod.stock}</div></div>
+                            </div>
+                            <p style="font-size:13px; font-weight:800; color:var(--text-primary); margin-top:10px;">${prod.nombre}</p>
+                            <button class="ai-more-info-btn" onclick="switchTab('inventario')"><i data-lucide="package" size="14"></i> Administrar Stock</button>
+                        </div>`;
+                        typeAITabResponse(`Agregados exitosamente a la base de datos:` + html);
                     } else { typeAITabResponse(`No encontré el producto. Recuerda darme la cantidad seguida del nombre exacto.`); }
                 } else { typeAITabResponse(`Fallo en el formato. Necesito que me des el número y luego el producto.`); }
                 return;
             }
 
             // ==========================================
-            // FASE 2: DETECTAR PREGUNTAS PROFUNDAS DE INVENTARIO
+            // RESPUESTAS ESTRATÉGICAS DISEÑADAS (25 PREGUNTAS)
             // ==========================================
+
             if(q.includes('estado de inventario') || q.includes('estado del inventario') || q.includes('revisar inventario')) {
                 const totalItems = productos.length;
                 const itemsAgotados = productos.filter(p => p.stock <= 0).length;
                 const capitalInvertido = productos.reduce((sum, p) => sum + (p.precioCosto * (p.stock > 0 ? p.stock : 0)), 0);
-                
                 const html = `
                 <div class="ai-inline-card">
                     <h4 style="margin-bottom:15px; color:var(--text-primary);"><i data-lucide="package-search"></i> Diagnóstico de Almacén</h4>
@@ -1941,24 +2171,14 @@
                 return;
             }
 
-            // ==========================================
-            // FASE 3: DETECTAR COMANDOS E INICIAR ESTADOS
-            // ==========================================
             if (q === 'busca un cliente' || q === 'buscar cliente' || q.includes('busca al cliente')) {
-                const namePart = q.replace(/busca un cliente|busca al cliente|buscar cliente/g, '').trim();
-                if (namePart.length > 2) { aiTabState = 'esperando_cliente'; processAITabQuery(namePart); } 
-                else { aiTabState = 'esperando_cliente'; typeAITabResponse('Claro, mi motor de búsqueda está listo. Dime únicamente el <b>nombre del cliente</b> que deseas localizar.'); return; }
+                aiTabState = 'esperando_cliente'; typeAITabResponse('Claro, mi motor de búsqueda está listo. Dime únicamente el <b>nombre del cliente</b> que deseas localizar.'); return;
             }
 
             if (q === 'cotizar producto') { aiTabState = 'esperando_cotizacion'; typeAITabResponse('Por supuesto. ¿Cuál es el nombre exacto o aproximado del producto que te gustaría consultar?'); return; }
             if (q === 'registrar un gasto' || q === 'registrar gasto') { aiTabState = 'esperando_gasto'; typeAITabResponse('Habilito el registro rápido. ¿De cuánto es el monto del egreso? Escribe solo el número.'); return; }
             if (q === 'surtir inventario') { aiTabState = 'esperando_surtir'; typeAITabResponse('Entendido. Escribe la cantidad seguida de una palabra clave del producto. Por ejemplo: "100 engargolado".'); return; }
 
-            // ==========================================
-            // FASE 4: CONSULTAS ANALÍTICAS CON DISEÑO INLINE
-            // ==========================================
-            
-            // Corte Diario INLINE
             if(q.includes('corte de caja') || q.includes('corte diario')) {
                 const vHoy = ventas.filter(v => v.fecha.startsWith(todayStr));
                 let tBruto=0, tUtil=0, pEfe=0, pTar=0;
@@ -1974,13 +2194,12 @@
                         <span><i data-lucide="banknote" size="14" style="color:var(--success-color);"></i> $${pEfe.toFixed(2)}</span>
                         <span><i data-lucide="credit-card" size="14" style="color:var(--accent-color);"></i> $${pTar.toFixed(2)}</span>
                     </div>
-                    <button class="ai-more-info-btn" onclick="openDailySummaryModal(); setTimeout(()=>generateDailySummary(), 300);"><i data-lucide="bar-chart-2" size="14"></i> Más información (Desglose)</button>
+                    <button class="ai-more-info-btn" onclick="openDailySummaryModal(); setTimeout(()=>generateDailySummary(), 300);"><i data-lucide="bar-chart-2" size="14"></i> Generar Reporte Detallado</button>
                 </div>`;
-                typeAITabResponse(`Generado al instante desde los registros. Aquí tienes tu reporte:` + html);
+                typeAITabResponse(`Generado al instante desde los registros de hoy:` + html);
                 return;
             }
 
-            // Ventas del Mes INLINE
             if(q.includes('ventas del mes')) {
                 const currentMonthStr = todayStr.slice(0, 7);
                 const vMes = ventas.filter(v => v.fecha.startsWith(currentMonthStr));
@@ -1989,7 +2208,7 @@
                 const metaPct = Math.min((totalMes / metaMensual) * 100, 100);
                 const html = `
                 <div class="ai-inline-card">
-                    <h4 style="margin-bottom:15px; color:var(--text-primary);"><i data-lucide="calendar"></i> Mes Actual</h4>
+                    <h4 style="margin-bottom:15px; color:var(--text-primary);"><i data-lucide="calendar"></i> Desempeño del Mes</h4>
                     <div class="ai-kpi-grid">
                         <div class="ai-kpi-box" style="background:var(--accent-color); color:white;"><small style="color:rgba(255,255,255,0.8);">Ingresos</small><div style="color:white;">$${totalMes.toFixed(2)}</div></div>
                         <div class="ai-kpi-box"><small>Utilidad</small><div style="color:var(--success-color);">$${utilMes.toFixed(2)}</div></div>
@@ -2004,20 +2223,17 @@
                 return;
             }
 
-            // Categoría Rentable (Gráfica Inline)
             if(q.includes('categoria') || q.includes('rentable')) {
                 const chartId = 'ai-chart-' + Date.now();
                 const catTotals = { 'Papelería': 0, 'Impresiones': 0, 'Servicios': 0, 'Juguetes': 0 };
                 const vMes = ventas.filter(v => v.fecha.startsWith(todayStr.slice(0, 7)));
                 vMes.forEach(v => { v.productos.forEach(p => { const cat = p.categoria || 'Otros'; if(catTotals[cat] !== undefined) { catTotals[cat] += ((p.precioVenta - p.precioCosto) * p.qty); } }); });
-                
                 const html = `
                 <div class="ai-inline-card">
                     <h4 style="margin-bottom:10px;"><i data-lucide="pie-chart"></i> Utilidad por Categoría (Mes)</h4>
                     <div class="ai-chart-container"><canvas id="${chartId}"></canvas></div>
                     <button class="ai-more-info-btn" onclick="switchTab('reportes'); changeMetricsPeriod('mes', document.querySelector('#reportes .categories-chips .chip:nth-child(4)'));"><i data-lucide="external-link" size="14"></i> Más información interactiva</button>
                 </div>`;
-                
                 typeAITabResponse(`Renderizando gráficas comparativas de ganancia...` + html, () => {
                     const ctx = document.getElementById(chartId).getContext('2d');
                     const accentHex = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#0071e3';
@@ -2028,67 +2244,272 @@
                 return;
             }
 
-            // Alertas de Stock INLINE
             if(q.includes('alertas') || q.includes('stock') || q.includes('por agotarse')) {
                 const alertas = getPredictiveAlerts();
                 if (alertas.length === 0) { typeAITabResponse('Todo el inventario está en niveles óptimos. No hay artículos en riesgo de agotarse pronto.'); return; }
-                let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+                let html = '<div class="ai-inline-card"><h4 style="margin-bottom:10px; color:var(--danger-color);"><i data-lucide="alert-triangle"></i> Stock Crítico</h4><div style="display:flex; flex-direction:column; gap:8px;">';
                 alertas.slice(0,5).forEach(a => {
                     const c = a.type === 'predictive' ? 'var(--accent-color)' : 'var(--danger-color)';
-                    html += `<div style="background:var(--card-bg); padding:10px 15px; border-radius:8px; border-left:4px solid ${c}; box-shadow:var(--shadow-sm);"><b style="font-size:14px;">${a.p.nombre}</b><div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${a.msg}</div></div>`;
+                    html += `<div style="background:var(--bg-color); padding:10px 15px; border-radius:8px; border-left:4px solid ${c}; box-shadow:var(--shadow-sm);"><b style="font-size:14px;">${a.p.nombre}</b><div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${a.msg}</div></div>`;
                 });
                 html += '</div>';
-                html += `<button class="ai-more-info-btn" onclick="openStockAlerts()"><i data-lucide="alert-triangle" size="14"></i> Más información de Alertas</button>`;
-                typeAITabResponse(`Cruzando datos de ventas con almacén... Aquí tienes el resumen de inventario crítico:` + html);
+                html += `<button class="ai-more-info-btn" onclick="openStockAlerts()"><i data-lucide="shopping-cart" size="14"></i> Abrir módulo de resurtido</button></div>`;
+                typeAITabResponse(`Cruzando datos de ventas con almacén... Aquí tienes el resumen:` + html);
                 return;
             }
 
-            // Mejor Cliente
             if (q.includes('mejor cliente') || q.includes('top clientes')) {
                 const clientTotals = {};
                 ventas.forEach(v => { if(v.cliente && v.cliente.toLowerCase() !== 'sin nombre') clientTotals[v.cliente] = (clientTotals[v.cliente]||0) + v.total; });
                 const sorted = Object.entries(clientTotals).sort((a,b) => b[1] - a[1]);
                 if (sorted.length > 0) {
-                    let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
-                    sorted.slice(0, 3).forEach((c, idx) => { html += `<div style="background:var(--card-bg); padding:12px 15px; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between;"><b style="font-size:14px;">#${idx+1} ${c[0]}</b> <span style="color:var(--success-color); font-weight:900;">$${c[1].toFixed(2)}</span></div>`; });
+                    let html = '<div class="ai-inline-card"><h4 style="margin-bottom:10px;"><i data-lucide="award" style="color:var(--warning-color);"></i> Clientes Estrella</h4><div style="display:flex; flex-direction:column; gap:8px;">';
+                    sorted.slice(0, 3).forEach((c, idx) => { html += `<div style="background:var(--bg-color); padding:12px 15px; border-radius:8px; display:flex; justify-content:space-between;"><b style="font-size:14px;">#${idx+1} ${c[0]}</b> <span style="color:var(--success-color); font-weight:900;">$${c[1].toFixed(2)}</span></div>`; });
                     html += '</div>';
-                    html += `<button class="ai-more-info-btn" onclick="switchTab('reportes')"><i data-lucide="users" size="14"></i> Más información del Ranking</button>`;
+                    html += `<button class="ai-more-info-btn" onclick="switchTab('reportes')"><i data-lucide="users" size="14"></i> Ver lista completa en Métricas</button></div>`;
                     typeAITabResponse(`Consultando el histórico de lealtad (LTV)... Estos son tus clientes más valiosos:` + html);
                     return;
                 } else { typeAITabResponse('Aún no hay clientes con nombre registrado en tus ventas para hacer el cálculo.'); return; }
             }
 
-            // Ventas Hoy (Simple)
             if(q.includes('cuanto vendi') || q.includes('ventas de hoy') || q.includes('ventas hoy')) {
                 const vHoy = ventas.filter(v => v.fecha.startsWith(todayStr));
                 const total = vHoy.reduce((s, v) => s + v.total, 0);
-                typeAITabResponse(`Hoy has cerrado <b>${vHoy.length} ventas</b> con un ingreso de <b style="color:var(--success-color); font-size:18px;">$${total.toFixed(2)}</b>.`);
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="banknote"></i> Resumen de Ventas (Hoy)</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Ingreso Total</small><div style="color:var(--success-color);">$${total.toFixed(2)}</div></div>
+                        <div class="ai-kpi-box"><small>Tickets Emitidos</small><div style="color:var(--text-primary);">${vHoy.length}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="openDailySummaryModal(); setTimeout(()=>generateDailySummary(), 300);"><i data-lucide="file-bar-chart" size="14"></i> Desglose Diario Completo</button>
+                </div>`;
+                typeAITabResponse(`He sumado los tickets de la jornada actual:` + html);
                 return;
             }
 
-            // Acciones Rápidas Carrito/Link
-            if (q.includes('descuento') && (q.includes('carrito') || q.includes('compra'))) {
+            if(q.includes('prediccion') || q.includes('manana') || q.includes('mañana')) {
+                const sieteDiasAtras = new Date();
+                sieteDiasAtras.setDate(sieteDiasAtras.getDate() - 7);
+                const limitStr = getLocalISO(sieteDiasAtras).slice(0, 10);
+                const ventasRecientes = ventas.filter(v => v.fecha >= limitStr);
+                const promedioDiario = ventasRecientes.reduce((sum, v) => sum + v.total, 0) / 7;
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="sparkles" style="color:var(--purple-color);"></i> Proyección de IA</h4>
+                    <p style="font-size:14px; color:var(--text-secondary);">Basado en el ritmo de los últimos 7 días, la predicción de cierre para mañana es:</p>
+                    <div style="font-size:28px; font-weight:900; color:var(--purple-color); margin-top:10px; text-align:center;">$${promedioDiario.toFixed(2)}</div>
+                </div>`;
+                typeAITabResponse(`Analizando algoritmos de flujo de caja semanal...` + html);
+                return;
+            }
+
+            if(q.includes('hora pico') || q.includes('hora de')) {
+                const hoursCount = new Array(24).fill(0); 
+                ventas.forEach(v => { const h = new Date(v.fecha).getHours(); hoursCount[h]++; }); 
+                let peakHour = 12, maxSales = 0; 
+                hoursCount.forEach((count, h) => { if(count > maxSales) { maxSales = count; peakHour = h; } }); 
+                const ampm = peakHour >= 12 ? 'PM' : 'AM'; 
+                const h12 = peakHour > 12 ? peakHour - 12 : (peakHour === 0 ? 12 : peakHour);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--warning-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="clock"></i> Mayor Tráfico de Clientes</h4>
+                    <div style="font-size:28px; font-weight:900; color:var(--warning-color); text-align:center;">${h12}:00 ${ampm}</div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-top:10px; text-align:center;">Asegúrate de tener el mostrador bien cubierto.</p>
+                </div>`;
+                typeAITabResponse(`Procesando el histórico de tickets...` + html);
+                return;
+            }
+
+            if(q.includes('tarjeta') || q.includes('transferencia')) {
+                const vHoyTarj = ventas.filter(v => v.fecha.startsWith(todayStr) && ['Tarjeta', 'Transferencia'].includes(v.pago));
+                const totalTarj = vHoyTarj.reduce((s, v) => s + v.total, 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--accent-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="credit-card"></i> Cobros Digitales (Hoy)</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Ventas Sin Efectivo</small><div style="color:var(--accent-color);">$${totalTarj.toFixed(2)}</div></div>
+                        <div class="ai-kpi-box"><small>Transacciones</small><div style="color:var(--text-primary);">${vHoyTarj.length}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('historial'); filterHistory('Tarjeta', document.querySelector('#historial .categories-chips .chip:nth-child(4)'));"><i data-lucide="list" size="14"></i> Filtrar Historial por Tarjeta</button>
+                </div>`;
+                typeAITabResponse(`Consultando los métodos de pago de hoy:` + html);
+                return;
+            }
+
+            if(q.includes('ticket promedio')) {
+                const vHoy = ventas.filter(v => v.fecha.startsWith(todayStr));
+                const total = vHoy.reduce((s, v) => s + v.total, 0);
+                const prom = vHoy.length > 0 ? total / vHoy.length : 0;
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="shopping-bag"></i> Ticket Promedio (Hoy)</h4>
+                    <div style="font-size:28px; font-weight:900; color:var(--accent-color); text-align:center;">$${prom.toFixed(2)}</div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-top:5px; text-align:center;">Gasto promedio por cliente.</p>
+                </div>`;
+                typeAITabResponse(`El cálculo arrojó lo siguiente:` + html);
+                return;
+            }
+
+            if(q.includes('ventas de ayer')) {
+                const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
+                const ayerStr = getLocalISO(ayer).slice(0, 10);
+                const vAyer = ventas.filter(v => v.fecha.startsWith(ayerStr));
+                const total = vAyer.reduce((s, v) => s + v.total, 0);
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="calendar"></i> Cierre de Ayer</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Ingreso Final</small><div style="color:var(--text-primary);">$${total.toFixed(2)}</div></div>
+                        <div class="ai-kpi-box"><small>Tickets Emitidos</small><div style="color:var(--text-secondary);">${vAyer.length}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('reportes'); changeMetricsPeriod('ayer', document.querySelector('#reportes .categories-chips .chip:nth-child(2)'));"><i data-lucide="bar-chart-2" size="14"></i> Analizar en Métricas</button>
+                </div>`;
+                typeAITabResponse(`Recuperando los archivos del día anterior...` + html);
+                return;
+            }
+
+            if(q.includes('pedidos pendientes')) {
+                const pends = pedidos.filter(p => p.estado === 'Pendiente' || p.estado === 'Impreso');
+                const totalPend = pends.reduce((s, p) => s + p.total, 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--warning-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="clipboard-list"></i> Cola de Trabajo</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Por Entregar</small><div style="color:var(--warning-color);">${pends.length}</div></div>
+                        <div class="ai-kpi-box"><small>Capital Retenido</small><div style="color:var(--text-primary);">$${totalPend.toFixed(2)}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('pedidos')"><i data-lucide="columns" size="14"></i> Ir al Tablero Kanban</button>
+                </div>`;
+                typeAITabResponse(`Existen órdenes sin finalizar en el taller:` + html);
+                return;
+            }
+
+            if(q.includes('total clientes') || q.includes('total de clientes')) {
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="users"></i> CRM Inteligente</h4>
+                    <div style="font-size:28px; font-weight:900; color:var(--purple-color); text-align:center;">${clientesDirectorio.length} Registros</div>
+                    <button class="ai-more-info-btn" onclick="switchTab('clientes')"><i data-lucide="users" size="14"></i> Abrir Directorio Completo</button>
+                </div>`;
+                typeAITabResponse(`Contando tu base de datos de lealtad:` + html);
+                return;
+            }
+
+            if(q.includes('gasto del mes')) {
+                const mesStr = todayStr.slice(0, 7);
+                const gMes = gastos.filter(g => g.fecha.startsWith(mesStr));
+                const totalGasto = gMes.reduce((s, g) => s + g.monto, 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--danger-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="trending-down"></i> Fuga de Capital (Mes)</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Egresos</small><div style="color:var(--text-primary);">${gMes.length}</div></div>
+                        <div class="ai-kpi-box"><small>Total Restado</small><div style="color:var(--danger-color);">-$${totalGasto.toFixed(2)}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('recursos')"><i data-lucide="landmark" size="14"></i> Desglose en Finanzas</button>
+                </div>`;
+                typeAITabResponse(`Revisando los asientos contables negativos del mes:` + html);
+                return;
+            }
+
+            if(q.includes('productos archivados') || q.includes('prod. archivados')) {
+                const arch = productos.filter(p => p.stock <= 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--text-secondary);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="archive"></i> Almacén Agotado</h4>
+                    <div style="font-size:28px; font-weight:900; color:var(--text-secondary); text-align:center;">${arch.length} Ítems</div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-top:5px; text-align:center;">Ocultos temporalmente por falta de stock.</p>
+                    <button class="ai-more-info-btn" onclick="switchTab('inventario')"><i data-lucide="package" size="14"></i> Revisar Inventario</button>
+                </div>`;
+                typeAITabResponse(`Estos son los productos desactivados en tu catálogo:` + html);
+                return;
+            }
+
+            if(q.includes('utilidad del mes')) {
+                const vMes = ventas.filter(v => v.fecha.startsWith(todayStr.slice(0, 7)));
+                const utilMes = vMes.reduce((s, v) => s + v.ganancia, 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--success-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="dollar-sign"></i> Ganancia Neta Mensual</h4>
+                    <div style="font-size:28px; font-weight:900; color:var(--success-color); text-align:center;">$${utilMes.toFixed(2)}</div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-top:5px; text-align:center;">Capital libre descontando costos de material.</p>
+                    <button class="ai-more-info-btn" onclick="switchTab('reportes');"><i data-lucide="bar-chart-3" size="14"></i> Ver Gráficas Completas</button>
+                </div>`;
+                typeAITabResponse(`Calculando tu margen de ganancia pura:` + html);
+                return;
+            }
+
+            if(q.includes('valor del inventario') || q.includes('capital invertido')) {
+                const capitalInvertido = productos.reduce((sum, p) => sum + (p.precioCosto * (p.stock > 0 ? p.stock : 0)), 0);
+                const capitalVenta = productos.reduce((sum, p) => sum + (p.precioVenta * (p.stock > 0 ? p.stock : 0)), 0);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--warning-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="boxes"></i> Valorización del Stock Físico</h4>
+                    <div class="ai-kpi-grid">
+                        <div class="ai-kpi-box"><small>Costo Invertido</small><div style="color:var(--text-primary);">$${capitalInvertido.toFixed(2)}</div></div>
+                        <div class="ai-kpi-box"><small>Venta Proyectada</small><div style="color:var(--success-color);">$${capitalVenta.toFixed(2)}</div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('inventario')"><i data-lucide="package" size="14"></i> Gestionar Productos</button>
+                </div>`;
+                typeAITabResponse(`Si vendieras hoy toda tu mercancía a precio regular, estos serían tus números:` + html);
+                return;
+            }
+
+            if(q.includes('progreso de meta') || q.includes('meta mensual')) {
+                const vMes = ventas.filter(v => v.fecha.startsWith(todayStr.slice(0, 7))).reduce((s, v) => s + v.total, 0);
+                const pct = Math.min((vMes / metaMensual) * 100, 100);
+                const html = `
+                <div class="ai-inline-card">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="target"></i> Progreso de Venta Mensual</h4>
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:5px;"><span>$${vMes.toFixed(2)} / $${metaMensual.toFixed(2)}</span><span>${pct.toFixed(1)}%</span></div>
+                        <div style="height:8px; background:rgba(0,0,0,0.1); border-radius:10px; overflow:hidden;"><div style="width:${pct}%; height:100%; background:var(--success-color);"></div></div>
+                    </div>
+                    <button class="ai-more-info-btn" onclick="switchTab('reportes')"><i data-lucide="bar-chart-2" size="14"></i> Analizar Desempeño</button>
+                </div>`;
+                typeAITabResponse(`Contrastando ventas vs. el objetivo trazado:` + html);
+                return;
+            }
+
+            if (q.includes('descuento') && (q.includes('carrito') || q.includes('compra') || q.includes('rápido'))) {
                 const match = q.match(/(\d+)%/);
-                if (match) {
-                    if (carrito.length === 0) { typeAITabResponse('El carrito está vacío. Agrega productos en la pestaña Ventas primero para aplicar fórmulas matemáticas sobre ellos.'); return; }
-                    const pct = parseInt(match[1]);
-                    carrito.forEach(item => { item.precioVenta = item.precioVenta * (1 - (pct/100)); });
-                    updateCartUI();
-                    typeAITabResponse(`Hecho. Apliqué un recálculo y modifiqué tu carrito con un <b>${pct}% de descuento</b> en todos los artículos. <br><br> <button class="ai-action-btn" onclick="openCart()"><i data-lucide="shopping-cart"></i> Abrir Carrito</button>`);
-                    return;
-                }
+                const pct = match ? parseInt(match[1]) : 10; 
+                if (carrito.length === 0) { typeAITabResponse('El carrito está vacío. Agrega productos en la pestaña Ventas primero para aplicar fórmulas sobre ellos.'); return; }
+                carrito.forEach(item => { item.precioVenta = item.precioVenta * (1 - (pct/100)); });
+                updateCartUI();
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: var(--success-color);">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="scissors"></i> Descuento de Promoción</h4>
+                    <p style="font-size:14px; color:var(--text-secondary);">El recálculo ha terminado. Resté <b>${pct}%</b> al total de los artículos elegidos.</p>
+                    <button class="ai-more-info-btn" onclick="openCart()"><i data-lucide="shopping-cart" size="14"></i> Abrir Carrito Modificado</button>
+                </div>`;
+                typeAITabResponse(`Procesando reducción algorítmica de precios...` + html);
+                return;
             }
 
             if (q.includes('link') && (q.includes('cobro') || q.includes('whatsapp'))) {
                 const total = carrito.reduce((sum, i) => sum + (i.precioVenta * i.qty), 0);
-                if (total === 0) { typeAITabResponse('El carrito está vacío para generar una estructura de cobro. Revisa tus ventas activas.'); return; }
-                const msg = encodeURIComponent(`Hola! Tu total a pagar es de $${total.toFixed(2)}. Puedes pagar aquí: [Pega tu link de pago]`);
-                typeAITabResponse(`He generado un mensaje pre-estructurado para tu carrito actual que suma <b style="color:var(--success-color);">$${total.toFixed(2)}</b>.<br><br><a href="https://wa.me/?text=${msg}" target="_blank" class="ai-action-btn" style="text-decoration:none;"><i data-lucide="external-link"></i> Abrir en WhatsApp</a>`);
+                if (total === 0) { typeAITabResponse('El carrito está vacío. No puedo generar una estructura de cobro sin productos.'); return; }
+                const msg = encodeURIComponent(`Hola! Tu total a pagar es de $${total.toFixed(2)}. Quedamos a tus órdenes.`);
+                const html = `
+                <div class="ai-inline-card" style="border-left-color: #25D366;">
+                    <h4 style="margin-bottom:10px;"><i data-lucide="message-circle" style="color:#25D366;"></i> Enlace de Cobro WA</h4>
+                    <div style="font-size:24px; font-weight:900; color:var(--text-primary); margin-top:10px; text-align:center;">$${total.toFixed(2)}</div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-top:5px; text-align:center;">El mensaje está redactado y listo para mandarse.</p>
+                    <a href="https://wa.me/?text=${msg}" target="_blank" class="ai-more-info-btn" style="text-decoration:none; background:rgba(37,211,102,0.1); color:#128C7E; border-color:rgba(37,211,102,0.3);"><i data-lucide="external-link" size="14"></i> Enviar por WhatsApp</a>
+                </div>`;
+                typeAITabResponse(`He armado un esquema de comunicación rápida para ti:` + html);
                 return;
             }
 
-            // Delegar a la inteligencia original si no coincide
-            typeAITabResponse('Ese parámetro aún no está en mi modelo de Machine Learning local. Prueba escribiendo comandos enfocados en inventario o finanzas, como "Revisar estado de inventario" o "Busca un cliente".');
+            // RESPUESTA FINAL DE FALLBACK (Con rediseño)
+            const htmlError = `
+            <div class="ai-inline-card" style="border-left-color: var(--warning-color);">
+                <h4 style="margin-bottom:10px;"><i data-lucide="alert-circle" style="color:var(--warning-color);"></i> Comando no reconocido</h4>
+                <p style="font-size:14px; color:var(--text-secondary);">Aún no he sido entrenado para ese parámetro. Por favor usa los botones de abajo o pregunta por métricas exactas.</p>
+            </div>`;
+            typeAITabResponse(`Tu motor cognitivo está aprendiendo.` + htmlError);
         }
 
         // ==========================================
@@ -2169,6 +2590,7 @@
             if (currentRole === 'admin') renderDashboardChart(ventasHoy, ventasAyer); 
             renderDashboardActivity();
             renderNotas();
+            checkMorningSummary();
         }
 
         function renderDashboardChart(vHoy, vAyer) { 
@@ -2193,7 +2615,18 @@
             items.sort((a, b) => b.time - a.time); if (items.length === 0) listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); font-weight: 700; font-size: 14px;">No hay actividad reciente.</div>'; else items.slice(0, 7).forEach(i => listEl.innerHTML += i.html); }
         function timeAgo(date) { const seconds = Math.floor((new Date() - date) / 1000); let interval = seconds / 31536000; if (interval > 1) return Math.floor(interval) + " años"; interval = seconds / 2592000; if (interval > 1) return Math.floor(interval) + " meses"; interval = seconds / 86400; if (interval > 1) return Math.floor(interval) + " días"; interval = seconds / 3600; if (interval >= 1) return Math.floor(interval) + " horas"; interval = seconds / 60; if (interval >= 1) return Math.floor(interval) + " min"; return "Hace un momento"; }
 
-        function calcularPrecioSugeridoPaquete() { const costoPaquete = parseFloat($('calc-costo-paquete').value) || 0; const piezas = parseInt($('calc-piezas').value) || 0; if (costoPaquete > 0 && piezas > 0) { const costoUnitario = costoPaquete / piezas; const precioSugerido = costoUnitario * 1.35; $('prod-costo').value = costoUnitario.toFixed(2); $('prod-venta').value = Math.ceil(precioSugerido); $('prod-costo').dispatchEvent(new Event('input')); } }
+        function calcularPrecioSugeridoPaquete() { 
+            const costoPaquete = parseFloat($('calc-costo-paquete').value) || 0; 
+            const piezas = parseInt($('calc-piezas').value) || 0; 
+            if (costoPaquete > 0 && piezas > 0) { 
+                const costoUnitario = costoPaquete / piezas; 
+                const precioSugerido = costoUnitario * 1.35; 
+                $('prod-costo').value = costoUnitario.toFixed(2); 
+                $('prod-venta').value = Math.ceil(precioSugerido); 
+                $('prod-costo').dispatchEvent(new Event('input')); 
+            } 
+        }
+
         function initMarginCalculator() { const iCost = $('prod-costo'), iPrice = $('prod-venta'), iMargin = $('margen-ganancia-auto'); const calc = () => { const c = parseFloat(iCost.value) || 0, p = parseFloat(iPrice.value) || 0; if(p > 0 && p > c) { iMargin.value = (((p - c) / p) * 100).toFixed(2) + '%'; iMargin.style.color = 'var(--success-color)'; } else if (p > 0 && p <= c) { iMargin.value = (((p - c) / p) * 100).toFixed(2) + '%'; iMargin.style.color = 'var(--danger-color)'; } else { iMargin.value = '0.00%'; iMargin.style.color = 'var(--text-secondary)'; } }; iCost.addEventListener('input', calc); iPrice.addEventListener('input', calc); }
         function initKanbanSortable() { if(typeof Sortable !== 'undefined') { $$('.kanban-cards-area').forEach(el => { new Sortable(el, { group: 'kanban', animation: 150, ghostClass: 'kanban-ghost', dragClass: 'kanban-drag', onEnd: function(evt) { const itemEl = evt.item; const id = parseInt(itemEl.id.replace('card-ped-', '')); const colMap = { 'kb-col-pendiente': 'Pendiente', 'kb-col-impreso': 'Impreso', 'kb-col-esperando': 'Esperando Cliente', 'kb-col-entregado': 'Entregado' }; const newState = colMap[evt.to.id]; const p = pedidos.find(x => x.id === id); if(p && newState && p.estado !== newState) { p.estado = newState; saveToStorage(); renderPedidos(); if(newState === 'Impreso') { showToast('Movido a En Proceso'); openWAModal(p); } renderDashboard(); } } }); }); } }
 
@@ -2209,8 +2642,8 @@
         
         function showToast(message) { 
             let icon = 'info';
-            if(message.toLowerCase().includes('error') || message.toLowerCase().includes('incorrecto') || message.toLowerCase().includes('agotado') || message.toLowerCase().includes('límite')) icon = 'alert-circle';
-            else if(message.toLowerCase().includes('guardado') || message.toLowerCase().includes('exitos') || message.toLowerCase().includes('agregaste') || message.toLowerCase().includes('procesado') || message.toLowerCase().includes('eliminad') || message.toLowerCase().includes('recuperado') || message.toLowerCase().includes('alcanzada')) icon = 'check-circle-2';
+            if(message.toLowerCase().includes('error') || message.toLowerCase().includes('incorrecto') || message.toLowerCase().includes('agotado') || message.toLowerCase().includes('límite') || message.toLowerCase().includes('faltan')) icon = 'alert-circle';
+            else if(message.toLowerCase().includes('guardad') || message.toLowerCase().includes('exitos') || message.toLowerCase().includes('agregaste') || message.toLowerCase().includes('procesado') || message.toLowerCase().includes('eliminad') || message.toLowerCase().includes('recuperado') || message.toLowerCase().includes('alcanzada') || message.toLowerCase().includes('activada') || message.toLowerCase().includes('desactivada') || message.toLowerCase().includes('actualizad')) icon = 'check-circle-2';
             
             const container = $('toast-container'), toast = document.createElement('div'); 
             toast.className = 'toast'; 
@@ -2896,7 +3329,7 @@
             }
         } 
         
-        function closeProductModal(e) { 
+       function closeProductModal(e) { 
             const id = $('prod-id').value;
             const closeAction = () => $('product-modal').classList.remove('active');
             if (id) {
@@ -2907,9 +3340,13 @@
             }
         }
 
-        function saveProduct() { const id = $('prod-id').value, nombre = $('prod-nombre').value, cat = $('prod-categoria').value, costo = parseFloat($('prod-costo').value) || 0, venta = parseFloat($('prod-venta').value) || 0, stock = parseInt($('prod-stock').value) || 0; if(!nombre) { triggerError('product-modal'); showToast('El nombre es obligatorio'); return; } if(id) { const idx = productos.findIndex(x => x.id === parseInt(id)); if(idx > -1) { productos[idx] = { ...productos[idx], nombre, categoria: cat, precioCosto: costo, precioVenta: venta, stock }; } } else { productos.push({ id: Date.now(), nombre, categoria: cat, precioCosto: costo, precioVenta: venta, stock }); } saveToStorage(); renderAll(); closeProductModal(); playSynthSound('save'); showToast('Producto guardado'); } function deleteProduct() { const id = parseInt($('prod-id').value); if(confirm('¿Estás seguro de eliminar este producto?')) { const idx = productos.findIndex(p => p.id === id); if (idx > -1) { lastDeletedProduct = productos[idx]; lastDeletedIndex = idx; productos.splice(idx, 1); saveToStorage(); renderAll(); closeProductModal(); playSynthSound('delete'); showUndoToast('Producto eliminado', undoDelete); } } }
+        function saveProduct() { const id = $('prod-id').value, nombre = $('prod-nombre').value, cat = $('prod-categoria').value, costo = parseFloat($('prod-costo').value) || 0, venta = parseFloat($('prod-venta').value) || 0, stock = parseInt($('prod-stock').value) || 0; if(!nombre) { triggerError('product-modal'); showToast('El nombre es obligatorio'); return; } if(id) { const idx = productos.findIndex(x => x.id === parseInt(id)); if(idx > -1) { productos[idx] = { ...productos[idx], nombre, categoria: cat, precioCosto: costo, precioVenta: venta, stock }; } } else { productos.push({ id: Date.now(), nombre, categoria: cat, precioCosto: costo, precioVenta: venta, stock }); } saveToStorage(); renderAll(); closeProductModal(); playSynthSound('save'); showToast('Producto guardado'); } 
+        function deleteProduct() { const id = parseInt($('prod-id').value); if(confirm('¿Estás seguro de eliminar este producto?')) { const idx = productos.findIndex(p => p.id === id); if (idx > -1) { lastDeletedProduct = productos[idx]; lastDeletedIndex = idx; productos.splice(idx, 1); saveToStorage(); renderAll(); closeProductModal(); playSynthSound('delete'); showUndoToast('Producto eliminado', undoDelete); } } }
         async function downloadTableAsPNG(elId, name) { if(typeof html2canvas === 'undefined') { showToast('Herramienta de exportación no cargada'); return; } const targetEl = document.getElementById(elId); if(!targetEl) { showToast('No se encontró el área'); return; } showToast('Generando imagen...'); try { const canvas = await html2canvas(targetEl, { backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-color') }); const link = document.createElement('a'); link.download = `${name}_PrintCenterPro_${new Date().getTime()}.png`; link.href = canvas.toDataURL(); link.click(); } catch(e) { showToast('Error al exportar'); } }
-        function exportData() { const data = { productos, ventas, pedidos, gastos, clientesDirectorio, ajustesSaldo, distribuciones, distribucionesJuguetes, waTemplates }; const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `PrintCenterPro_Backup_${new Date().getTime()}.json`; link.click(); showToast('Respaldo descargado'); } function importData(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { try { const data = JSON.parse(evt.target.result); if(data.productos) productos = data.productos; if(data.ventas) ventas = data.ventas; if(data.pedidos) pedidos = data.pedidos; if(data.gastos) gastos = data.gastos; if(data.clientesDirectorio) clientesDirectorio = data.clientesDirectorio; if(data.ajustesSaldo) ajustesSaldo = data.ajustesSaldo; if(data.distribuciones) distribuciones = data.distribuciones; if(data.distribucionesJuguetes) distribucionesJuguetes = data.distribucionesJuguetes; if(data.waTemplates) waTemplates = data.waTemplates; saveToStorage(); renderAll(); showToast('Datos importados...'); setTimeout(() => location.reload(), 1500); } catch(err) { showToast('Archivo JSON inválido'); } }; reader.readAsText(file); } function resetSystem() { if(prompt('Escribe "BORRAR" en mayúsculas para formatear la base de datos') === 'BORRAR') { localStorage.clear(); showToast('Sistema borrado. Reiniciando...'); setTimeout(() => location.reload(), 1500); } else { showToast('Cancelado'); } }
+        
+        function exportData() { const data = { productos, ventas, pedidos, gastos, clientesDirectorio, ajustesSaldo, distribuciones, distribucionesJuguetes, waTemplates, aiMostradorQuestions }; const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `PrintCenterPro_Backup_${new Date().getTime()}.json`; link.click(); showToast('Respaldo descargado'); } 
+        function importData(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { try { const data = JSON.parse(evt.target.result); if(data.productos) productos = data.productos; if(data.ventas) ventas = data.ventas; if(data.pedidos) pedidos = data.pedidos; if(data.gastos) gastos = data.gastos; if(data.clientesDirectorio) clientesDirectorio = data.clientesDirectorio; if(data.ajustesSaldo) ajustesSaldo = data.ajustesSaldo; if(data.distribuciones) distribuciones = data.distribuciones; if(data.distribucionesJuguetes) distribucionesJuguetes = data.distribucionesJuguetes; if(data.waTemplates) waTemplates = data.waTemplates; if(data.aiMostradorQuestions) aiMostradorQuestions = data.aiMostradorQuestions; saveToStorage(); renderAll(); showToast('Datos importados...'); setTimeout(() => location.reload(), 1500); } catch(err) { showToast('Archivo JSON inválido'); } }; reader.readAsText(file); } 
+        function resetSystem() { if(prompt('Escribe "BORRAR" en mayúsculas para formatear la base de datos') === 'BORRAR') { localStorage.clear(); showToast('Sistema borrado. Reiniciando...'); setTimeout(() => location.reload(), 1500); } else { showToast('Cancelado'); } }
 
         function openSpotlight() { playSynthSound('modal'); $('spotlight-overlay').classList.add('active'); $('spotlight-input').value = ''; $('spotlight-results').innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-secondary); font-weight:700;">Escribe para buscar...</div>'; setTimeout(() => $('spotlight-input').focus(), 100); }
         function closeSpotlight(e) { if (e && e.target !== $('spotlight-overlay')) return; $('spotlight-overlay').classList.remove('active'); }
@@ -2938,7 +3375,7 @@
                 });
             }
 
-            const tabs = [ {n: 'Ventas (Nueva Venta)', t: 'ventas', i: 'shopping-cart'}, {n: 'Dashboard / Inicio', t: 'dashboard', i: 'layout-dashboard'}, {n: 'Kanban Pedidos', t: 'pedidos', i: 'columns'}, {n: 'Inventario / Stock', t: 'inventario', i: 'package'}, {n: 'Clientes', t: 'clientes', i: 'users'}, {n: 'Métricas / Reportes', t: 'reportes', i: 'bar-chart-3'}, {n: 'Finanzas', t: 'recursos', i: 'landmark'}, {n: 'SmartControl IA', t: 'ai-tab', i: 'brain'}, {n: 'Ajustes', t: 'configuracion', i: 'settings'}, ]; 
+            const tabs = [ {n: 'Ventas (Nueva Venta)', t: 'ventas', i: 'shopping-cart'}, {n: 'Dashboard / Inicio', t: 'dashboard', i: 'layout-dashboard'}, {n: 'Kanban Pedidos', t: 'pedidos', i: 'columns'}, {n: 'Inventario / Stock', t: 'inventario', i: 'package'}, {n: 'Clientes', t: 'clientes', i: 'users'}, {n: 'Métricas / Reportes', t: 'reportes', i: 'bar-chart-3'}, {n: 'Finanzas', t: 'recursos', i: 'landmark'}, {n: 'PrintCenter IA', t: 'ai-tab', i: 'brain'}, {n: 'Ajustes', t: 'configuracion', i: 'settings'}, ]; 
             const matchedTabs = tabs.filter(t => t.n.toLowerCase().includes(q)); 
             if(matchedTabs.length > 0) { html += '<div class="spotlight-category">Atajos y Navegación</div>'; matchedTabs.forEach(t => { html += `<div class="spotlight-item" onclick="closeSpotlight(); switchTab('${t.t}')"><div class="spotlight-item-icon"><i data-lucide="${t.i}"></i></div><div class="spotlight-item-text"><div class="spotlight-item-title">${t.n}</div><div class="spotlight-item-sub">Ir a la pestaña</div></div></div>`; count++; }); } 
             
@@ -2957,92 +3394,85 @@
             if (count === 0) { html = '<div style="padding:30px; text-align:center; color:var(--text-secondary);"><i data-lucide="search-x" size="48" style="opacity:0.2; margin-bottom:15px;"></i><br><strong style="font-size:16px;">No se encontraron resultados</strong><br><span style="font-size:13px; font-weight:600;">Intenta con otro término</span></div>'; } 
             res.innerHTML = html; renderIcons(); 
         }
-// ==========================================
-// REPORTE MATUTINO AUTOMÁTICO DE IA
-// ==========================================
-function checkMorningSummary() {
-    // Solo mostrar el reporte financiero al Administrador
-    if (currentRole !== 'admin') return; 
-    
-    const todayStr = getLocalISO().slice(0, 10);
-    const lastSummary = localStorage.getItem('pos_last_morning_summary');
-    
-    // Si la fecha guardada no es la de hoy, significa que es la primera vez que entra en el día
-    if (lastSummary !== todayStr) {
-        // Guardamos la fecha de hoy para que no vuelva a salir hasta mañana
-        localStorage.setItem('pos_last_morning_summary', todayStr);
-        
-        // 1. Calcular la fecha exacta de ayer
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = getLocalISO(yesterday).slice(0, 10);
-        
-        // 2. Filtrar las ventas de ayer y calcular totales
-        const vAyer = ventas.filter(v => v.fecha.startsWith(yesterdayStr));
-        const totalAyer = vAyer.reduce((sum, v) => sum + v.total, 0);
-        const utilAyer = vAyer.reduce((sum, v) => sum + v.ganancia, 0);
-        
-        // 3. Calcular el producto estrella (el más vendido)
-        let topProd = 'Sin ventas registradas';
-        let maxQty = 0;
-        const conteo = {};
-        vAyer.forEach(v => v.productos.forEach(p => {
-            conteo[p.nombre] = (conteo[p.nombre] || 0) + p.qty;
-            if(conteo[p.nombre] > maxQty) { 
-                maxQty = conteo[p.nombre]; 
-                topProd = p.nombre; 
+
+        // ==========================================
+        // REPORTE MATUTINO AUTOMÁTICO DE IA
+        // ==========================================
+        function checkMorningSummary() {
+            if (currentRole !== 'admin') return; 
+            
+            const todayStr = getLocalISO().slice(0, 10);
+            const lastSummary = localStorage.getItem('pos_last_morning_summary');
+            
+            if (lastSummary !== todayStr) {
+                localStorage.setItem('pos_last_morning_summary', todayStr);
+                
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = getLocalISO(yesterday).slice(0, 10);
+                
+                const vAyer = ventas.filter(v => v.fecha.startsWith(yesterdayStr));
+                const totalAyer = vAyer.reduce((sum, v) => sum + v.total, 0);
+                const utilAyer = vAyer.reduce((sum, v) => sum + v.ganancia, 0);
+                
+                let topProd = 'Sin ventas registradas';
+                let maxQty = 0;
+                const conteo = {};
+                vAyer.forEach(v => v.productos.forEach(p => {
+                    conteo[p.nombre] = (conteo[p.nombre] || 0) + p.qty;
+                    if(conteo[p.nombre] > maxQty) { 
+                        maxQty = conteo[p.nombre]; 
+                        topProd = p.nombre; 
+                    }
+                }));
+
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay active';
+                overlay.style.zIndex = '9999999'; 
+                overlay.innerHTML = `
+                    <div class="ai-modal-box ios-modal fade-in" style="transform: scale(1) translateY(0); opacity: 1; border: 1px solid rgba(175, 82, 222, 0.4); box-shadow: 0 30px 60px rgba(175, 82, 222, 0.3);">
+                        <div class="ai-header" style="background: linear-gradient(135deg, var(--purple-color), #d082f0); padding: 25px 30px;">
+                            <div class="ai-header-left">
+                                <div class="ai-icon-pulse"><i data-lucide="sunrise" size="24"></i></div>
+                                <div>
+                                    <h2 style="font-weight: 900; font-size: 22px; margin: 0; letter-spacing: -0.5px;">Reporte Matutino IA</h2>
+                                    <span style="font-size: 13px; font-weight: 700; opacity: 0.9;">PrintCenter IA</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 30px; background: var(--bg-color); flex: 1; text-align: center;">
+                            <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 10px; color: var(--text-primary);">¡Buenos días, ${userName}! ☕</h3>
+                            <p style="color: var(--text-secondary); font-size: 15px; font-weight: 600; margin-bottom: 25px;">He procesado el cierre del sistema de ayer. Aquí tienes los números clave para arrancar este nuevo día:</p>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                                    <small style="font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase;">Venta Bruta</small>
+                                    <div style="font-size: 26px; font-weight: 900; color: var(--text-primary); margin-top: 5px;">$${totalAyer.toFixed(2)}</div>
+                                </div>
+                                <div style="background: rgba(52, 199, 89, 0.05); padding: 20px; border-radius: var(--radius-md); border: 1px solid rgba(52,199,89,0.2); box-shadow: var(--shadow-sm);">
+                                    <small style="font-size: 12px; font-weight: 800; color: var(--success-color); text-transform: uppercase;">Utilidad Libre</small>
+                                    <div style="font-size: 26px; font-weight: 900; color: var(--success-color); margin-top: 5px;">$${utilAyer.toFixed(2)}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: var(--card-bg); padding: 18px 25px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; box-shadow: var(--shadow-sm);">
+                                <div style="text-align: left;">
+                                    <small style="font-size: 11px; font-weight: 800; color: var(--warning-color); text-transform: uppercase;">Producto Estrella de Ayer</small>
+                                    <div style="font-size: 17px; font-weight: 900; color: var(--text-primary); margin-top: 4px;">${topProd}</div>
+                                </div>
+                                <i data-lucide="award" size="36" style="color: var(--warning-color); opacity: 0.8;"></i>
+                            </div>
+
+                            <button class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 16px; background: var(--purple-color); box-shadow: 0 8px 25px var(--purple-glow);" onclick="this.closest('.modal-overlay').remove(); playSynthSound('save');"><i data-lucide="zap" size="20"></i> Excelente, ¡a trabajar!</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                renderIcons(); 
+                
+                setTimeout(() => { playSynthSound('cash'); }, 300);
             }
-        }));
-
-        // 4. Construir y renderizar el Modal de la IA
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay active';
-        overlay.style.zIndex = '9999999'; // Se asegura de estar por encima del Navbar
-        overlay.innerHTML = `
-            <div class="ai-modal-box ios-modal fade-in" style="transform: scale(1) translateY(0); opacity: 1; border: 1px solid rgba(175, 82, 222, 0.4); box-shadow: 0 30px 60px rgba(175, 82, 222, 0.3);">
-                <div class="ai-header" style="background: linear-gradient(135deg, var(--purple-color), #d082f0); padding: 25px 30px;">
-                    <div class="ai-header-left">
-                        <div class="ai-icon-pulse"><i data-lucide="sunrise" size="24"></i></div>
-                        <div>
-                            <h2 style="font-weight: 900; font-size: 22px; margin: 0; letter-spacing: -0.5px;">Reporte Matutino IA</h2>
-                            <span style="font-size: 13px; font-weight: 700; opacity: 0.9;">SmartControl</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="padding: 30px; background: var(--bg-color); flex: 1; text-align: center;">
-                    <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 10px; color: var(--text-primary);">¡Buenos días, ${userName}! ☕</h3>
-                    <p style="color: var(--text-secondary); font-size: 15px; font-weight: 600; margin-bottom: 25px;">He procesado el cierre del sistema de ayer. Aquí tienes los números clave para arrancar este nuevo día:</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                        <div style="background: var(--card-bg); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                            <small style="font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase;">Venta Bruta</small>
-                            <div style="font-size: 26px; font-weight: 900; color: var(--text-primary); margin-top: 5px;">$${totalAyer.toFixed(2)}</div>
-                        </div>
-                        <div style="background: rgba(52, 199, 89, 0.05); padding: 20px; border-radius: var(--radius-md); border: 1px solid rgba(52,199,89,0.2); box-shadow: var(--shadow-sm);">
-                            <small style="font-size: 12px; font-weight: 800; color: var(--success-color); text-transform: uppercase;">Utilidad Libre</small>
-                            <div style="font-size: 26px; font-weight: 900; color: var(--success-color); margin-top: 5px;">$${utilAyer.toFixed(2)}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: var(--card-bg); padding: 18px 25px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; box-shadow: var(--shadow-sm);">
-                        <div style="text-align: left;">
-                            <small style="font-size: 11px; font-weight: 800; color: var(--warning-color); text-transform: uppercase;">Producto Estrella de Ayer</small>
-                            <div style="font-size: 17px; font-weight: 900; color: var(--text-primary); margin-top: 4px;">${topProd}</div>
-                        </div>
-                        <i data-lucide="award" size="36" style="color: var(--warning-color); opacity: 0.8;"></i>
-                    </div>
-
-                    <button class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 16px; background: var(--purple-color); box-shadow: 0 8px 25px var(--purple-glow);" onclick="this.closest('.modal-overlay').remove(); playSynthSound('save');"><i data-lucide="zap" size="20"></i> Excelente, ¡a trabajar!</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        renderIcons(); // Renderizar iconos de Lucide
-        
-        // Sonido de bienvenida especial
-        setTimeout(() => { playSynthSound('cash'); }, 300);
-    }
-}
+        }
     </script>
 </body>
 </html>
