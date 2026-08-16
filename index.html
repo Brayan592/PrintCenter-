@@ -726,7 +726,7 @@
                 <button class="btn btn-outline" style="width:100%; margin-bottom:20px; padding:14px; font-size:14px;" onclick="logout()">
                     <i data-lucide="log-out" size="18"></i> Cerrar Sesión
                 </button>
-                <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.08.800 Vision IA :) </div>
+                <div style="font-size: 12px; color: var(--text-secondary); text-align:center; font-weight:800; letter-spacing: 0.5px;">v20.26.08.900 Vision IA :) </div>
             </div>
         </div>
 
@@ -3341,80 +3341,130 @@
         function moveProd(id, dir) { const idx = productos.findIndex(p => p.id === id); if(idx < 0) return; const newIdx = idx + dir; if(newIdx >= 0 && newIdx < productos.length) { const temp = productos[idx]; productos[idx] = productos[newIdx]; productos[newIdx] = temp; saveToStorage(); const scrollArea = $('main-scroll-area'); const scrollPos = scrollArea.scrollTop; renderInventory(); requestAnimationFrame(() => { scrollArea.scrollTop = scrollPos; }); playSynthSound('click_tab'); } }
 
         function renderInventory() { 
-            const list = document.getElementById('inventory-list'); 
-            const archList = document.getElementById('inventory-archived-list'); 
-            if(!list || !archList) return; 
-            list.innerHTML = ''; 
-            archList.innerHTML = ''; 
-            
-            let sorted = [...productos]; 
-            const sortMode = document.getElementById('inv-sort-mode').value; 
-            if (sortMode === 'az') sorted.sort((a,b) => a.nombre.localeCompare(b.nombre)); 
-            else if (sortMode === 'za') sorted.sort((a,b) => b.nombre.localeCompare(a.nombre)); 
-            else if (sortMode === 'price-asc') sorted.sort((a,b) => a.precioVenta - b.precioVenta); 
-            else if (sortMode === 'price-desc') sorted.sort((a,b) => b.precioVenta - a.precioVenta); 
-            
-            const isManual = (sortMode === 'manual'); 
-            let hasArchived = false; 
-            
-            sorted.forEach(p => { 
-                let cardClass = 'inv-card fade-in'; 
-                let stockBadge = ''; 
-                if (p.stock <= 0) { 
-                    cardClass += ' inv-card-out'; 
-                    stockBadge = '<span class="status-badge stock-out">Sin Stock</span>'; 
-                } else if (p.stock <= 5) { 
-                    cardClass += ' inv-card-low'; 
-                    stockBadge = '<span class="status-badge stock-low">Poco Stock</span>'; 
-                } else { 
-                    cardClass += ' inv-card-high'; 
-                    stockBadge = '<span class="status-badge stock-high">Stock Óptimo</span>'; 
-                } 
-                
-                const div = document.createElement('div'); 
-                div.className = cardClass; 
-                div.id = `inv-card-${p.id}`;
-                
-                let orderButtons = ''; 
-                if(isManual) { 
-                    orderButtons = ` 
-                    <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index: 10;"> 
-                        <button class="order-arrows-btn" onclick="moveProd(${p.id}, -1)"><i data-lucide="arrow-up" size="16"></i></button> 
-                        <button class="order-arrows-btn" onclick="moveProd(${p.id}, 1)"><i data-lucide="arrow-down" size="16"></i></button> 
-                    </div>`; 
-                } 
-                
-                div.innerHTML = ` 
-                    ${orderButtons} 
-                    <h4 style="font-weight:900; font-size:18px; padding-right:${isManual?'65px':'0'};">${p.nombre}</h4> 
-                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;"> 
-                        <p class="admin-only" style="color:var(--text-secondary); font-size:13px; font-weight:700; margin:0;">
-                            Costo: $${parseFloat(p.precioCosto).toFixed(2)} | Venta: $${parseFloat(p.precioVenta).toFixed(2)}
-                        </p> 
-                        ${stockBadge} 
-                    </div> 
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; gap:10px;"> 
-                        <div class="inv-stock-edit"> 
-                            <span style="color:var(--text-secondary);"><i data-lucide="layers" size="18"></i></span> 
-                            <input type="number" value="${p.stock}" onchange="inlineUpdateStock(${p.id}, this.value)"> 
-                        </div> 
-                        <button class="btn btn-secondary admin-only" style="padding:12px; color:var(--accent-color);" onclick="openProductModal(${p.id})">
-                            <i data-lucide="edit-3" size="18"></i>
-                        </button> 
-                    </div>`; 
-                    
-                if(p.stock <= 0) { 
-                    archList.appendChild(div); 
-                    hasArchived = true; 
-                } else { 
-                    list.appendChild(div); 
-                } 
-            }); 
-            
-            const archHeader = document.getElementById('archived-header'); 
-            if (archHeader) archHeader.style.display = hasArchived ? 'block' : 'none'; 
-            renderIcons(); 
+    const list = document.getElementById('inventory-list'); 
+    const archList = document.getElementById('inventory-archived-list'); 
+    if(!list || !archList) return; 
+    list.innerHTML = ''; 
+    archList.innerHTML = ''; 
+    
+    let sorted = [...productos]; 
+    const sortMode = document.getElementById('inv-sort-mode').value; 
+    if (sortMode === 'az') sorted.sort((a,b) => a.nombre.localeCompare(b.nombre)); 
+    else if (sortMode === 'za') sorted.sort((a,b) => b.nombre.localeCompare(a.nombre)); 
+    else if (sortMode === 'price-asc') sorted.sort((a,b) => a.precioVenta - b.precioVenta); 
+    else if (sortMode === 'price-desc') sorted.sort((a,b) => b.precioVenta - a.precioVenta); 
+    
+    const isManual = (sortMode === 'manual'); 
+    let hasArchived = false; 
+
+    // 1. Agrupar los productos por categoría
+    const categorias = ['Papelería', 'Impresiones', 'Servicios', 'Juguetes', 'Otros'];
+    const grouped = {};
+    categorias.forEach(c => grouped[c] = { active: [], archived: [] });
+
+    sorted.forEach(p => {
+        const cat = p.categoria || 'Otros';
+        if (!grouped[cat]) grouped[cat] = { active: [], archived: [] };
+        if (p.stock <= 0) {
+            grouped[cat].archived.push(p);
+            hasArchived = true;
+        } else {
+            grouped[cat].active.push(p);
         }
+    });
+
+    // Función interna para crear las tarjetas
+    const createCardHTML = (p) => {
+        let cardClass = 'inv-card fade-in'; 
+        let stockBadge = ''; 
+        if (p.stock <= 0) { 
+            cardClass += ' inv-card-out'; 
+            stockBadge = '<span class="status-badge stock-out">Sin Stock</span>'; 
+        } else if (p.stock <= 5) { 
+            cardClass += ' inv-card-low'; 
+            stockBadge = '<span class="status-badge stock-low">Poco Stock</span>'; 
+        } else { 
+            cardClass += ' inv-card-high'; 
+            stockBadge = '<span class="status-badge stock-high">Stock Óptimo</span>'; 
+        } 
+        
+        let orderButtons = ''; 
+        if(isManual) { 
+            orderButtons = ` 
+            <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index: 10;"> 
+                <button class="order-arrows-btn" onclick="moveProd(${p.id}, -1)" title="Mover arriba"><i data-lucide="arrow-up" size="16"></i></button> 
+                <button class="order-arrows-btn" onclick="moveProd(${p.id}, 1)" title="Mover abajo"><i data-lucide="arrow-down" size="16"></i></button> 
+            </div>`; 
+        } 
+        
+        return ` 
+        <div class="${cardClass}" id="inv-card-${p.id}">
+            ${orderButtons} 
+            <h4 style="font-weight:900; font-size:18px; padding-right:${isManual?'65px':'0'};">${p.nombre}</h4> 
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;"> 
+                <p class="admin-only" style="color:var(--text-secondary); font-size:13px; font-weight:700; margin:0;">
+                    Costo: $${parseFloat(p.precioCosto).toFixed(2)} | Venta: $${parseFloat(p.precioVenta).toFixed(2)}
+                </p> 
+                ${stockBadge} 
+            </div> 
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; gap:10px;"> 
+                <div class="inv-stock-edit"> 
+                    <span style="color:var(--text-secondary);"><i data-lucide="layers" size="18"></i></span> 
+                    <input type="number" value="${p.stock}" onchange="inlineUpdateStock(${p.id}, this.value)"> 
+                </div> 
+                <button class="btn btn-secondary admin-only" style="padding:12px; color:var(--accent-color);" onclick="openProductModal(${p.id})">
+                    <i data-lucide="edit-3" size="18"></i>
+                </button> 
+            </div>
+        </div>`;
+    };
+
+    // Iconos decorativos para los encabezados
+    const catIcons = {
+        'Papelería': 'paperclip',
+        'Impresiones': 'printer',
+        'Servicios': 'zap',
+        'Juguetes': 'gamepad-2',
+        'Otros': 'package'
+    };
+
+    // 2. Renderizar productos activos agrupados con separadores
+    Object.keys(grouped).forEach(cat => {
+        if (grouped[cat].active.length > 0) {
+            const icon = catIcons[cat] || 'folder';
+            list.innerHTML += `
+                <div style="grid-column: 1 / -1; margin-top: 15px; margin-bottom: 5px;">
+                    <h3 style="font-size: 18px; font-weight: 900; color: var(--accent-color); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display:flex; align-items:center; gap:8px;">
+                        <i data-lucide="${icon}"></i> ${cat}
+                    </h3>
+                </div>
+            `;
+            grouped[cat].active.forEach(p => {
+                list.innerHTML += createCardHTML(p);
+            });
+        }
+    });
+
+    // 3. Renderizar productos archivados (agotados) también agrupados
+    Object.keys(grouped).forEach(cat => {
+        if (grouped[cat].archived.length > 0) {
+            archList.innerHTML += `
+                <div style="grid-column: 1 / -1; margin-top: 15px; margin-bottom: 5px;">
+                    <h4 style="font-size: 15px; font-weight: 800; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                        ${cat}
+                    </h4>
+                </div>
+            `;
+            grouped[cat].archived.forEach(p => {
+                archList.innerHTML += createCardHTML(p);
+            });
+        }
+    });
+    
+    const archHeader = document.getElementById('archived-header'); 
+    if (archHeader) archHeader.style.display = hasArchived ? 'block' : 'none'; 
+    renderIcons(); 
+}
 
         function openProductModal(id = null) { 
             if(currentRole !== 'admin') return; 
