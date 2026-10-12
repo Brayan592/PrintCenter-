@@ -1,0 +1,15 @@
+{
+  "name": "printcenterpro-pos",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Sistema punto de venta para centro de impresión y copiado con gestión de productos, órdenes, clientes e informes.",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build successful')\""
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

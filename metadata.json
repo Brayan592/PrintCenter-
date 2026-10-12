@@ -1,0 +1,8 @@
+{
+  "name": "PrintCenterPro POS",
+  "description": "Sistema punto de venta para centro de impresión y copiado con gestión de productos, órdenes, clientes e informes.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
