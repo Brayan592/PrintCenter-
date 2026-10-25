@@ -156,11 +156,12 @@
         .sidebar-menu button:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); transform: translateX(6px); }
         .sidebar-menu button.active { background: var(--accent-color); color: #fff; box-shadow: 0 8px 20px var(--accent-glow); transform: translateX(6px); }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 120px; position: relative; padding-top: env(safe-area-inset-top); scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
-        header { padding: 25px 30px; background: var(--glass-bg); backdrop-filter: blur(25px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
-        .container { padding: 30px; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 110px; position: relative; padding-top: env(safe-area-inset-top); scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+        header { padding: clamp(14px, 2.5vw, 25px) clamp(16px, 3vw, 30px); background: var(--glass-bg); backdrop-filter: blur(25px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; flex-wrap: wrap; gap: 12px; }
+        .container { padding: clamp(14px, 3vw, 30px); flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; position: relative; box-sizing: border-box; }
         
-        .mobile-menu-btn { display: none !important; }
+        .mobile-menu-btn { display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); padding: 6px; border-radius: var(--radius-sm); transition: transform 0.2s; }
+        .mobile-menu-btn:active { transform: scale(0.9); }
         .balance-pill { padding: 12px 24px; border-radius: 100px; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .balance-pill:hover { transform: scale(1.05); }
         .balance-pill:active { transform: scale(0.95); }
@@ -421,14 +422,212 @@
             border-color: rgba(0, 113, 227, 0.3) !important;
         }
 
-        @media (min-width: 768px) {
+        /* =========================================
+           ADAPTACIÓN TOTAL Y RESPONSIVE EN CUALQUIER DISPOSITIVO
+        ========================================= */
+        #sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 95;
+            opacity: 0;
+            transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        #sidebar-backdrop.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ESTILOS DE ENLACE MULTI-DISPOSITIVO */
+        .sync-badge-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .sync-badge-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .sync-badge-btn:active {
+            transform: scale(0.95);
+        }
+        .sync-badge-btn.synced {
+            background: rgba(52, 199, 89, 0.12);
+            border-color: rgba(52, 199, 89, 0.45);
+            color: var(--success-color);
+        }
+        .sync-pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #8e8e93;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .sync-badge-btn.synced .sync-pulse-dot {
+            background: var(--success-color);
+            box-shadow: 0 0 8px rgba(52, 199, 89, 0.9);
+            animation: syncPulseDotAnim 1.8s infinite ease-in-out;
+        }
+        @keyframes syncPulseDotAnim {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(1.3); }
+        }
+
+        .sync-code-display {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: clamp(26px, 7vw, 40px);
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-align: center;
+            color: var(--accent-color);
+            padding: 16px 20px;
+            background: rgba(0, 113, 227, 0.08);
+            border: 2px dashed rgba(0, 113, 227, 0.35);
+            border-radius: var(--radius-md);
+            margin: 15px 0;
+            user-select: all;
+        }
+        .device-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .device-list-item.is-current {
+            border-color: var(--accent-color);
+            background: rgba(0, 113, 227, 0.06);
+        }
+
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            margin-bottom: 24px;
+        }
+
+        /* AUTO-AJUSTE PARA MÓVILES (< 768px) */
+        @media (max-width: 767px) {
+            body { overflow-x: hidden; }
+            .mobile-menu-btn { display: flex !important; }
+            .sidebar {
+                display: flex !important;
+                position: fixed !important;
+                top: 0; left: 0;
+                height: 100dvh !important;
+                z-index: 100 !important;
+                transform: translateX(-105%) !important;
+                transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                box-shadow: none;
+                width: min(85vw, 300px) !important;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0) !important;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+            }
+            .tab-bar { display: flex !important; }
+            .hide-mobile { display: none !important; }
+            .hide-on-phone { display: none !important; }
+            .main-content { padding-bottom: 110px !important; }
+            
+            /* Fluid inputs & cards */
+            .kpi-main-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .kpi-dash-card {
+                padding: 14px !important;
+                border-radius: 18px !important;
+            }
+            .kpi-value {
+                font-size: clamp(18px, 5.5vw, 24px) !important;
+            }
+            .kpi-icon-wrap {
+                width: 36px !important;
+                height: 36px !important;
+                margin-bottom: 10px !important;
+            }
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(clamp(135px, 43vw, 175px), 1fr)) !important;
+                gap: 12px !important;
+            }
+            .product-card {
+                padding: 14px !important;
+                min-height: 140px !important;
+            }
+            .product-name {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+            }
+            .product-price {
+                font-size: 18px !important;
+            }
+            .kanban-col {
+                flex: 0 0 clamp(260px, 80vw, 310px) !important;
+            }
+            .daily-record-card {
+                padding: 14px !important;
+            }
+            .ios-modal {
+                width: 95vw !important;
+                max-height: 85vh !important;
+                overflow-y: auto !important;
+                border-radius: 24px 24px 0 0 !important;
+                margin-top: auto !important;
+            }
+            .sync-header-label {
+                display: none;
+            }
+        }
+
+        /* AUTO-AJUSTE PARA TABLETS (768px - 1024px) */
+        @media (min-width: 768px) and (max-width: 1024px) {
             body { overflow: hidden; height: 100dvh; }
-            .sidebar { display: flex; transform: none; height: 100dvh; z-index: 20; position: static;}
+            .sidebar { display: flex; transform: none; height: 100dvh; z-index: 20; position: static; width: 220px !important; }
             .mobile-menu-btn { display: none !important; }
-            .tab-bar { display: none; }
+            .tab-bar { display: none !important; }
+            .main-content { padding-bottom: 0; height: 100dvh; overflow-y: auto; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; }
+            .kanban-col { flex: 0 0 280px !important; }
+            .kpi-main-grid { grid-template-columns: repeat(3, 1fr) !important; }
+            .modal-overlay { align-items: center; }
+            .ios-modal { border-radius: var(--radius-xl); width: min(650px, 92vw); max-height: 90vh; overflow-y: auto; }
+            .drag-handle { display: none; }
+        }
+
+        /* PANTALLAS GRANDES Y ESCRITORIO (> 1024px) */
+        @media (min-width: 1025px) {
+            body { overflow: hidden; height: 100dvh; }
+            .sidebar { display: flex; transform: none; height: 100dvh; z-index: 20; position: static; }
+            .mobile-menu-btn { display: none !important; }
+            .tab-bar { display: none !important; }
             .main-content { padding-bottom: 0; height: 100dvh; overflow-y: auto; }
             .kanban-col { flex: 1; min-width: 250px; }
-            .products-grid { grid-template-columns: repeat(var(--user-grid-cols, 3), 1fr); }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); }
             .modal-overlay { align-items: center; }
             .ios-modal { border-radius: var(--radius-xl); width: 580px; transform: scale(0.8) translateY(50px); transform-origin: center; opacity: 0; }
             .modal-overlay.active .ios-modal { transform: scale(1) translateY(0); opacity: 1; }
@@ -436,9 +635,6 @@
             .spotlight-box { max-width: 700px; transform: translateY(-10vh) scale(0.95); }
             .spotlight-overlay.active .spotlight-box { transform: translateY(0) scale(1); }
             .cart-sidebar { max-width: 500px; border-left: 1px solid var(--border-color); }
-        }
-        @media (min-width: 1200px) and (orientation: landscape) {
-            .products-grid { grid-template-columns: repeat(var(--user-grid-cols, 5), 1fr); }
         }
 
         /* ESTILOS DEL DASHBOARD */
@@ -775,6 +971,9 @@
         </div>
     </div>
 
+    <!-- BACKDROP PARA MENÚ MÓVIL (AUTO-AJUSTE) -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
     <div class="app-layout">
         <!-- BARRA LATERAL -->
         <div class="sidebar">
@@ -822,11 +1021,17 @@
                         <span id="header-notas-badge" class="note-alert-badge" style="display:none; cursor:pointer;" onclick="switchTab('dashboard')" title="Tienes notas pendientes">¡NOTAS!</span>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <!-- BOTÓN ENLACE MULTI-DISPOSITIVO -->
+                    <button class="sync-badge-btn" id="btn-header-sync" onclick="openDeviceSyncModal()" title="Enlace de Dispositivos (Móvil / PC)">
+                        <span class="sync-pulse-dot" id="sync-status-dot"></span>
+                        <i data-lucide="smartphone" size="16"></i>
+                        <span id="sync-header-text" class="sync-header-label">Enlazar</span>
+                    </button>
                     <div class="btn-rush stagger-item admin-only" style="animation-delay: 0.1s; background: linear-gradient(135deg, var(--purple-color), #d082f0); color: white;" onclick="switchTab('ai-tab')" title="PrintCenter IA"><i data-lucide="sparkles" size="20"></i></div>
                     <div class="btn-rush stagger-item admin-only" style="background:var(--warning-color); position:relative; animation-delay: 0.1s;" onclick="openStockAlerts()" title="Alertas de Stock"><i data-lucide="bell" size="20"></i><div class="bell-dot-header" id="bell-dot"></div></div>
-                    <div class="balance-pill stagger-item admin-only" style="animation-delay: 0.3s; background: linear-gradient(135deg, var(--success-color), #32d74b); color: white;" id="pill-caja-efectivo">Caja: $0.00</div>
-                    <div class="balance-pill stagger-item admin-only" style="animation-delay: 0.4s; background: linear-gradient(135deg, var(--warning-color), #ffcc00); color: white;" id="pill-caja-cotizacion">Cotizado: $0.00</div>
+                    <div class="balance-pill stagger-item admin-only hide-on-phone" style="animation-delay: 0.3s; background: linear-gradient(135deg, var(--success-color), #32d74b); color: white;" id="pill-caja-efectivo">Caja: $0.00</div>
+                    <div class="balance-pill stagger-item admin-only hide-on-phone" style="animation-delay: 0.4s; background: linear-gradient(135deg, var(--warning-color), #ffcc00); color: white;" id="pill-caja-cotizacion">Cotizado: $0.00</div>
                 </div>
             </header>
             <div class="container">
@@ -1485,6 +1690,31 @@
                         </div>
 
                         <div class="settings-pane" id="cfg-datos">
+                            <!-- ENLACE MULTI-DISPOSITIVO EN AJUSTES -->
+                            <div style="background:var(--input-bg); border-radius:var(--radius-md); padding:24px; margin-bottom:30px; border:2px solid rgba(0, 113, 227, 0.35);">
+                                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:14px;">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <div style="background:rgba(0,113,227,0.15); color:var(--accent-color); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i data-lucide="smartphone" size="24"></i>
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size:18px; font-weight:900; margin:0; color:var(--text-primary);">Enlace Multi-Dispositivo en Tiempo Real</h4>
+                                            <p style="color:var(--text-secondary); font-size:13px; font-weight:600; margin:3px 0 0 0;">
+                                                Conecta celulares, tablets y computadoras usando un código compartido. Cualquier venta registrada se sincroniza al instante en todos los aparatos.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div id="cfg-sync-status-badge" style="font-size:12px; font-weight:800; padding:6px 14px; border-radius:100px; background:rgba(0,0,0,0.06); color:var(--text-secondary); display:flex; align-items:center; gap:6px;">
+                                        <span class="sync-pulse-dot" id="cfg-sync-dot"></span> <span id="cfg-sync-status-text">Sin enlazar</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button class="btn btn-primary" style="flex:1; min-width:200px; padding:16px; font-size:15px;" onclick="openDeviceSyncModal()">
+                                        <i data-lucide="share-2" size="18"></i> Gestionar Enlace y Código
+                                    </button>
+                                </div>
+                            </div>
+
                             <h3 style="margin-bottom: 24px; font-size:26px; font-weight:900;">Respaldo y Seguridad</h3>
                             <button class="btn btn-secondary" style="width:100%; margin-bottom:18px; padding:22px; font-size:16px;" onclick="exportData()"><i data-lucide="download" size="22"></i> Exportar Copia JSON</button>
                             <label class="btn btn-secondary" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:10px; box-sizing:border-box; cursor:pointer; margin-bottom:30px; padding:22px; font-size:16px;"><i data-lucide="upload" size="22"></i> Importar Copia JSON<input type="file" id="import-file" style="display:none;" onchange="importData(event)"></label>
@@ -1528,6 +1758,35 @@
             </div> <!-- Cierre de .container -->
         </div> <!-- Cierre de .main-content -->
     </div> <!-- Cierre de .app-layout -->
+
+    <!-- BARRA INFERIOR DE NAVEGACIÓN RÁPIDA (AUTO-AJUSTE PARA MÓVILES) -->
+    <nav class="tab-bar" id="mobile-bottom-bar" aria-label="Navegación móvil">
+        <div class="tab-item active" id="tab-item-dashboard" onclick="switchTab('dashboard', this)">
+            <i data-lucide="layout-dashboard" size="20"></i>
+            <span>Inicio</span>
+        </div>
+        <div class="tab-item" id="tab-item-ventas" onclick="switchTab('ventas', this)">
+            <i data-lucide="shopping-cart" size="20"></i>
+            <span>Ventas</span>
+        </div>
+        <div class="tab-item" id="tab-item-pedidos" onclick="switchTab('pedidos', this)">
+            <i data-lucide="columns" size="20"></i>
+            <span>Kanban</span>
+        </div>
+        <div class="tab-item" id="tab-item-historial" onclick="switchTab('historial', this)">
+            <i data-lucide="clock" size="20"></i>
+            <span>Historial</span>
+        </div>
+        <div class="tab-item" id="tab-item-sync" onclick="openDeviceSyncModal()">
+            <span class="sync-pulse-dot" style="margin-bottom:2px;"></span>
+            <i data-lucide="smartphone" size="20"></i>
+            <span>Enlace</span>
+        </div>
+        <div class="tab-item admin-only" id="tab-item-configuracion" onclick="switchTab('configuracion', this)">
+            <i data-lucide="settings" size="20"></i>
+            <span>Ajustes</span>
+        </div>
+    </nav>
 <!-- ==========================================
          MODALES DE LA APLICACIÓN
     =========================================== -->
@@ -1644,6 +1903,118 @@
     </button>
 </div><div id="resumen-diario-captura" style="background:var(--card-bg); padding:10px;"><div id="daily-summary-content" style="display:none; animation: slideUpFade 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"><div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:30px;"><div style="background:var(--input-bg); padding:20px; border-radius:var(--radius-md); text-align:center; border:1px solid var(--border-color);"><small style="color:var(--text-secondary); font-weight:800; letter-spacing:0.5px;">VENTA BRUTA</small><h3 id="ds-bruta" style="color:var(--text-primary); font-size:26px; font-weight:900; margin-top:10px;">$0.00</h3></div><div style="background:rgba(255, 59, 48, 0.05); padding:20px; border-radius:var(--radius-md); text-align:center; border:1px solid rgba(255,59,48,0.2);"><small style="color:var(--danger-color); font-weight:800; letter-spacing:0.5px;">COSTO MAT.</small><h3 id="ds-costo" style="color:var(--danger-color); font-size:26px; font-weight:900; margin-top:10px;">$0.00</h3></div><div style="background:rgba(52, 199, 89, 0.05); padding:20px; border-radius:var(--radius-md); text-align:center; border:1px solid rgba(52,199,89,0.2);"><small style="color:var(--success-color); font-weight:800; letter-spacing:0.5px;">UTILIDAD NETA</small><h3 id="ds-utilidad" style="color:var(--success-color); font-size:26px; font-weight:900; margin-top:10px;">$0.00</h3></div></div><div style="display:flex; gap:25px; margin-bottom:25px;"><div style="flex:1; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px;"><h4 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-secondary); text-align:center;">Métodos de Pago</h4><div style="display:flex; justify-content:space-around; text-align:center; margin-top:20px;"><div><i data-lucide="banknote" size="28" style="color:var(--success-color); margin-bottom:8px;"></i><div id="ds-efectivo" style="font-weight:900; font-size:18px;">$0.00</div></div><div><i data-lucide="credit-card" size="28" style="color:var(--accent-color); margin-bottom:8px;"></i><div id="ds-tarjeta" style="font-weight:900; font-size:18px;">$0.00</div></div></div></div><div style="flex:1; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px;"><h4 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-secondary); text-align:center;">Utilidad por Categoría</h4><div id="ds-kpi-categories" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"></div></div></div><div style="margin-bottom:25px; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; background:var(--input-bg);"><h4 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-secondary); display:flex; align-items:center; gap:8px;"><i data-lucide="pie-chart" size="18" style="color:var(--accent-color);"></i> Distribución Presupuestaria del Rango (5 Apartados)</h4><div id="ds-distrib-cards" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px;"></div></div><h4 style="font-size:18px; font-weight:900; margin-bottom:15px; color:var(--accent-color);"><i data-lucide="package" size="20" style="vertical-align:middle;"></i> Top Productos del Periodo</h4><div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); max-height:250px; overflow-y:auto; transform:translateZ(0);"><table class="excel-table" style="margin-bottom:0; box-shadow:none; border:none; border-radius:0;"><thead style="position:sticky; top:0; z-index:5;"><tr><th style="text-align:left;">Producto</th><th>Vendidos</th><th>Total ($)</th></tr></thead><tbody id="ds-top-products"></tbody></table></div></div></div><button class="btn btn-outline" style="width:100%; margin-top:25px; padding:18px; font-size:16px;" onclick="closeDailySummaryModal()">Cerrar Resumen</button></div></div>
     
+    <!-- MODAL DE ENLACE MULTI-DISPOSITIVO (SINCRONIZACIÓN EN TIEMPO REAL) -->
+    <div class="modal-overlay" id="sync-devices-modal">
+        <div class="ios-modal" onclick="event.stopPropagation()" style="max-width: 580px;">
+            <div class="drag-handle"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="background:rgba(0,113,227,0.12); color:var(--accent-color); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                        <i data-lucide="smartphone" size="22"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-weight:900; font-size:22px; margin:0;">Enlace Multi-Dispositivo</h2>
+                        <span id="sync-modal-status-pill" style="font-size:12px; font-weight:800; color:var(--text-secondary);">Sincronización en tiempo real</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="padding:8px 12px; border-radius:10px; border:none;" onclick="closeDeviceSyncModal()">
+                    <i data-lucide="x" size="18"></i>
+                </button>
+            </div>
+
+            <!-- VISTA CUANDO YA ESTÁ ENLAZADO -->
+            <div id="sync-view-connected" style="display:none;">
+                <div style="background:rgba(52, 199, 89, 0.08); border:1px solid rgba(52,199,89,0.25); border-radius:var(--radius-md); padding:16px; margin-bottom:18px; text-align:center;">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; font-weight:800; color:var(--success-color); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                        <span class="sync-pulse-dot" style="background:var(--success-color); box-shadow:0 0 8px rgba(52,199,89,0.8);"></span> Enlazado y Sincronizando
+                    </div>
+                    <div style="font-size:12px; color:var(--text-secondary); font-weight:600;">
+                        Las ventas que registres o modifiques aquí se replican en todos los dispositivos conectados.
+                    </div>
+                </div>
+
+                <label style="font-size:12px; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">
+                    Código de esta Tienda
+                </label>
+                <div class="sync-code-display" id="sync-display-code">------</div>
+
+                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" style="flex:1; min-width:140px; padding:12px 16px; font-size:13px; font-weight:800;" onclick="copySyncCode()">
+                        <i data-lucide="copy" size="16"></i> Copiar Código
+                    </button>
+                    <button class="btn btn-secondary" style="flex:1; min-width:140px; padding:12px 16px; font-size:13px; font-weight:800;" onclick="copySyncLink()">
+                        <i data-lucide="link" size="16"></i> Copiar Enlace Directo
+                    </button>
+                </div>
+
+                <!-- Nombre de este dispositivo -->
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label>Nombre de este dispositivo (ej. Celular Mostrador, Laptop)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="sync-my-device-name" placeholder="Ej. Celular Caja" style="font-weight:700; padding:12px 16px; font-size:14px;">
+                        <button class="btn btn-secondary" style="padding:12px 16px; font-size:13px; font-weight:800;" onclick="saveDeviceNameInput()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- Lista de aparatos conectados -->
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="font-size:12px; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin:0;">
+                            Dispositivos en línea (<span id="sync-devices-count">1</span>)
+                        </label>
+                        <button style="background:none; border:none; color:var(--accent-color); font-size:12px; font-weight:800; cursor:pointer;" onclick="refreshSyncStatus()">Actualizar</button>
+                    </div>
+                    <div id="sync-devices-list" style="max-height:160px; overflow-y:auto;">
+                        <!-- Se llena con JS -->
+                    </div>
+                </div>
+
+                <button class="btn btn-outline" style="width:100%; padding:14px; color:var(--danger-color); border-color:rgba(255,59,48,0.3); font-size:14px;" onclick="unlinkDeviceSync()">
+                    <i data-lucide="unlink" size="16"></i> Desconectar este Dispositivo
+                </button>
+            </div>
+
+            <!-- VISTA CUANDO NO ESTÁ ENLAZADO -->
+            <div id="sync-view-disconnected">
+                <div style="background:rgba(0,113,227,0.06); border-radius:var(--radius-md); padding:18px; margin-bottom:20px; border:1px solid rgba(0,113,227,0.2);">
+                    <div style="font-weight:800; font-size:14px; margin-bottom:6px; color:var(--accent-color);">
+                        ¿Cómo funciona el enlace entre dispositivos?
+                    </div>
+                    <div style="font-size:13px; color:var(--text-secondary); line-height:1.4; font-weight:600;">
+                        1. Abre la app en un teléfono o computadora.<br>
+                        2. Crea un código o únete con el código existente.<br>
+                        3. Al cobrar o registrar ventas en el celular de mostrador, la computadora en oficina o la tablet se actualizarán automáticamente sin recargar la página.
+                    </div>
+                </div>
+
+                <div style="margin-bottom:22px;">
+                    <button class="btn btn-primary" style="width:100%; padding:18px; font-size:16px; font-weight:900;" onclick="generateNewSyncCode()">
+                        <i data-lucide="plus-circle" size="20"></i> Crear Nuevo Código de Tienda
+                    </button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                    <div style="flex:1; height:1px; background:var(--border-color);"></div>
+                    <span style="font-size:12px; font-weight:800; color:var(--text-secondary); text-transform:uppercase;">O ingresar código</span>
+                    <div style="flex:1; height:1px; background:var(--border-color);"></div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label>Código de Tienda Compartido</label>
+                    <input type="text" id="sync-input-code" placeholder="Ej. PRINT-824" style="text-transform:uppercase; letter-spacing:2px; font-weight:900; font-size:18px; text-align:center; padding:16px;" onkeydown="if(event.key==='Enter') joinWithInputCode()">
+                </div>
+
+                <button class="btn btn-secondary" style="width:100%; padding:16px; font-size:15px; font-weight:800; background:var(--card-bg);" onclick="joinWithInputCode()">
+                    <i data-lucide="link-2" size="18"></i> Unirse con este Código
+                </button>
+            </div>
+
+            <button class="btn btn-outline" style="width:100%; margin-top:20px; padding:14px; font-size:14px;" onclick="closeDeviceSyncModal()">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
     <!-- SPOTLIGHT BUSCADOR UNIVERSAL (COMMAND PALETTE) -->
     <div class="spotlight-overlay" id="spotlight-overlay" onclick="closeSpotlight(event)">
         <div class="spotlight-box" onclick="event.stopPropagation()">
@@ -1674,6 +2045,410 @@
         
         // Estado Global del Text-To-Speech (Voz)
         let isTTSActive = false;
+
+        /* ========================================================
+           SISTEMA DE ENLACE MULTI-DISPOSITIVO EN TIEMPO REAL
+        ======================================================== */
+        let syncRoomCode = (localStorage.getItem('pos_sync_code') || '').toUpperCase().trim();
+        let syncDeviceId = localStorage.getItem('pos_device_id') || ('dev_' + Math.random().toString(36).slice(2, 9));
+        localStorage.setItem('pos_device_id', syncDeviceId);
+
+        function getDefaultDeviceName() {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const isTablet = /iPad|Tablet/i.test(navigator.userAgent) || (window.innerWidth >= 768 && window.innerWidth <= 1024);
+            const roleLabel = currentRole === 'admin' ? 'Admin' : 'Mostrador';
+            if (isTablet) return `Tablet (${roleLabel})`;
+            if (isMobile) return `Celular (${roleLabel})`;
+            return `Caja PC (${roleLabel})`;
+        }
+
+        let syncDeviceName = localStorage.getItem('pos_device_name') || getDefaultDeviceName();
+        localStorage.setItem('pos_device_name', syncDeviceName);
+
+        let syncVersion = parseInt(localStorage.getItem('pos_sync_version') || '0', 10);
+        let syncPollInterval = null;
+        let isSyncProcessing = false;
+
+        function updateSyncUI() {
+            const isConnected = !!syncRoomCode;
+            const headerBtn = $('btn-header-sync');
+            const headerDot = $('sync-status-dot');
+            const headerText = $('sync-header-text');
+            const tabSyncDot = document.querySelector('#tab-item-sync .sync-pulse-dot');
+            const cfgDot = $('cfg-sync-dot');
+            const cfgText = $('cfg-sync-status-text');
+            const modalViewConn = $('sync-view-connected');
+            const modalViewDis = $('sync-view-disconnected');
+            const displayCode = $('sync-display-code');
+            const statusPill = $('sync-modal-status-pill');
+            const myNameInput = $('sync-my-device-name');
+
+            if (isConnected) {
+                if (headerBtn) headerBtn.classList.add('synced');
+                if (headerText) headerText.innerHTML = `Enlazado: <b>${syncRoomCode}</b>`;
+                if (tabSyncDot) { tabSyncDot.style.background = 'var(--success-color)'; tabSyncDot.style.boxShadow = '0 0 6px var(--success-color)'; }
+                if (cfgDot) { cfgDot.style.background = 'var(--success-color)'; cfgDot.style.boxShadow = '0 0 6px var(--success-color)'; }
+                if (cfgText) cfgText.innerText = `Enlazado a ${syncRoomCode}`;
+                if (modalViewConn) modalViewConn.style.display = 'block';
+                if (modalViewDis) modalViewDis.style.display = 'none';
+                if (displayCode) displayCode.innerText = syncRoomCode;
+                if (statusPill) statusPill.innerText = `Sala Activa: ${syncRoomCode}`;
+                if (myNameInput) myNameInput.value = syncDeviceName;
+            } else {
+                if (headerBtn) headerBtn.classList.remove('synced');
+                if (headerText) headerText.innerText = 'Enlazar';
+                if (tabSyncDot) { tabSyncDot.style.background = '#8e8e93'; tabSyncDot.style.boxShadow = 'none'; }
+                if (cfgDot) { cfgDot.style.background = '#8e8e93'; cfgDot.style.boxShadow = 'none'; }
+                if (cfgText) cfgText.innerText = 'Sin enlazar';
+                if (modalViewConn) modalViewConn.style.display = 'none';
+                if (modalViewDis) modalViewDis.style.display = 'block';
+                if (statusPill) statusPill.innerText = 'Sin conexión multi-dispositivo';
+            }
+            renderIcons();
+        }
+
+        function openDeviceSyncModal() {
+            playSynthSound('modal');
+            updateSyncUI();
+            const modal = $('sync-devices-modal');
+            if (modal) modal.classList.add('active');
+            if (syncRoomCode) {
+                refreshSyncStatus();
+            }
+        }
+
+        function closeDeviceSyncModal() {
+            const modal = $('sync-devices-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        async function joinSyncRoom(code, manual = false) {
+            const norm = String(code || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+            if (!norm) {
+                showToast('Código de enlace inválido');
+                return;
+            }
+            try {
+                const payload = {
+                    code: norm,
+                    deviceId: syncDeviceId,
+                    deviceName: syncDeviceName,
+                    initialData: {
+                        ventas: ventas,
+                        productos: productos,
+                        clientes: clientesDirectorio,
+                        pedidos: pedidos
+                    }
+                };
+                const res = await fetch('/api/sync/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json());
+
+                if (res.success) {
+                    syncRoomCode = res.code;
+                    syncVersion = res.version;
+                    localStorage.setItem('pos_sync_code', syncRoomCode);
+                    localStorage.setItem('pos_sync_version', syncVersion);
+
+                    // Si la sala tenía un snapshot previo con ventas
+                    if (res.snapshot && Array.isArray(res.snapshot.ventas) && res.snapshot.ventas.length > 0) {
+                        let mergedCount = 0;
+                        res.snapshot.ventas.forEach(remoteV => {
+                            if (!ventas.some(v => v.id === remoteV.id)) {
+                                ventas.push(remoteV);
+                                mergedCount++;
+                            }
+                        });
+                        if (mergedCount > 0) {
+                            ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                            saveToStorage();
+                            renderAll();
+                        }
+                    }
+
+                    updateSyncUI();
+                    startSyncPolling();
+                    refreshSyncStatus();
+
+                    if (manual) {
+                        playSynthSound('cash');
+                        showToast(`🟢 Enlazado con éxito: ${syncRoomCode}`);
+                    }
+                } else {
+                    showToast(res.error || 'No se pudo conectar a la sala');
+                }
+            } catch (e) {
+                console.error('Error al unirse a sync room:', e);
+                showToast('Error conectando al servidor de enlace');
+            }
+        }
+
+        function generateNewSyncCode() {
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const newCode = 'PRINT-' + randomNum;
+            joinSyncRoom(newCode, true);
+        }
+
+        function joinWithInputCode() {
+            const input = $('sync-input-code');
+            const val = input ? input.value : '';
+            if (!val.trim()) {
+                showToast('Escribe un código de tienda');
+                return;
+            }
+            joinSyncRoom(val, true);
+            if (input) input.value = '';
+        }
+
+        function unlinkDeviceSync() {
+            if (confirm('¿Deseas desenlazar este dispositivo? Tus ventas locales permanecerán guardadas.')) {
+                stopSyncPolling();
+                syncRoomCode = '';
+                syncVersion = 0;
+                localStorage.removeItem('pos_sync_code');
+                localStorage.removeItem('pos_sync_version');
+                updateSyncUI();
+                playSynthSound('delete');
+                showToast('Dispositivo desenlazado');
+            }
+        }
+
+        function copySyncCode() {
+            if (!syncRoomCode) return;
+            navigator.clipboard.writeText(syncRoomCode).then(() => {
+                playSynthSound('save');
+                showToast(`📋 Código copiado: ${syncRoomCode}`);
+            }).catch(() => {
+                prompt('Copia este código de enlace:', syncRoomCode);
+            });
+        }
+
+        function copySyncLink() {
+            if (!syncRoomCode) return;
+            const url = `${window.location.origin}${window.location.pathname}?sync=${encodeURIComponent(syncRoomCode)}`;
+            navigator.clipboard.writeText(url).then(() => {
+                playSynthSound('save');
+                showToast('🔗 Enlace de invitación directo copiado');
+            }).catch(() => {
+                prompt('Copia este enlace de invitación:', url);
+            });
+        }
+
+        function saveDeviceNameInput() {
+            const input = $('sync-my-device-name');
+            if (!input || !input.value.trim()) return;
+            syncDeviceName = input.value.trim();
+            localStorage.setItem('pos_device_name', syncDeviceName);
+            playSynthSound('save');
+            showToast('Nombre de dispositivo guardado');
+            if (syncRoomCode) {
+                broadcastSyncEvent({ type: 'DEVICE_HEARTBEAT', name: syncDeviceName });
+                refreshSyncStatus();
+            }
+        }
+
+        async function refreshSyncStatus() {
+            if (!syncRoomCode) return;
+            try {
+                const res = await fetch(`/api/sync/status?code=${encodeURIComponent(syncRoomCode)}`).then(r => r.json());
+                if (res.exists) {
+                    const countEl = $('sync-devices-count');
+                    if (countEl) countEl.innerText = res.activeCount || 1;
+                    const listEl = $('sync-devices-list');
+                    if (listEl && Array.isArray(res.devices)) {
+                        listEl.innerHTML = res.devices.map(d => {
+                            const isMe = d.id === syncDeviceId;
+                            const isPhone = /celular|móvil|iphone|android/i.test(d.name);
+                            const iconName = isPhone ? 'smartphone' : 'monitor';
+                            return `
+                            <div class="device-list-item ${isMe ? 'is-current' : ''}">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <span class="sync-pulse-dot" style="background:var(--success-color); box-shadow:0 0 6px var(--success-color);"></span>
+                                    <i data-lucide="${iconName}" size="18" style="color:var(--text-secondary);"></i>
+                                    <div>
+                                        <span style="color:var(--text-primary); font-weight:800;">${d.name || 'Dispositivo'}</span>
+                                        ${isMe ? '<span style="font-size:11px; background:rgba(0,113,227,0.12); color:var(--accent-color); padding:2px 8px; border-radius:100px; margin-left:6px; font-weight:800;">Este equipo</span>' : ''}
+                                    </div>
+                                </div>
+                                <span style="font-size:11px; color:var(--success-color); font-weight:800;">En línea</span>
+                            </div>`;
+                        }).join('');
+                        renderIcons();
+                    }
+                }
+            } catch(e) {}
+        }
+
+        function startSyncPolling() {
+            stopSyncPolling();
+            pollSyncUpdates();
+            syncPollInterval = setInterval(pollSyncUpdates, 2500);
+        }
+
+        function stopSyncPolling() {
+            if (syncPollInterval) {
+                clearInterval(syncPollInterval);
+                syncPollInterval = null;
+            }
+        }
+
+        async function pollSyncUpdates() {
+            if (!syncRoomCode || isSyncProcessing) return;
+            try {
+                const url = `/api/sync/poll?code=${encodeURIComponent(syncRoomCode)}&version=${syncVersion}&deviceId=${encodeURIComponent(syncDeviceId)}`;
+                const res = await fetch(url).then(r => r.json());
+                if (!res) return;
+
+                if (res.hasUpdates) {
+                    isSyncProcessing = true;
+                    if (res.type === 'EVENTS' && Array.isArray(res.events)) {
+                        let changesCount = 0;
+                        res.events.forEach(ev => {
+                            if (ev.deviceId !== syncDeviceId) {
+                                applyRemoteSyncEvent(ev);
+                                changesCount++;
+                            }
+                        });
+                        syncVersion = res.version;
+                        localStorage.setItem('pos_sync_version', syncVersion);
+                        if (changesCount > 0) {
+                            saveToStorage();
+                            renderAll();
+                            if (typeof onDailyFechaChange === 'function') onDailyFechaChange();
+                            if (typeof updateMonthDeletePreview === 'function') updateMonthDeletePreview();
+                        }
+                    } else if (res.type === 'SNAPSHOT' && res.snapshot) {
+                        if (Array.isArray(res.snapshot.ventas)) {
+                            ventas = res.snapshot.ventas;
+                            saveToStorage();
+                            renderAll();
+                            if (typeof onDailyFechaChange === 'function') onDailyFechaChange();
+                            if (typeof updateMonthDeletePreview === 'function') updateMonthDeletePreview();
+                        }
+                        syncVersion = res.version;
+                        localStorage.setItem('pos_sync_version', syncVersion);
+                    }
+                    isSyncProcessing = false;
+                }
+
+                const modal = $('sync-devices-modal');
+                if (modal && modal.classList.contains('active') && res.activeDevices) {
+                    const countEl = $('sync-devices-count');
+                    if (countEl) countEl.innerText = res.activeDevices;
+                }
+            } catch(e) {
+                isSyncProcessing = false;
+            }
+        }
+
+        function applyRemoteSyncEvent(event) {
+            if (!event || event.deviceId === syncDeviceId) return;
+            const sender = event.deviceName || 'otro dispositivo';
+            
+            switch(event.type) {
+                case 'DAILY_SALE_SAVED': {
+                    const remoteV = event.venta;
+                    if (!remoteV) break;
+                    const targetIdx = ventas.findIndex(v => v.id === remoteV.id || (v.fecha && remoteV.fecha && v.fecha.slice(0, 10) === remoteV.fecha.slice(0, 10) && v.tipoRegistro === 'diario'));
+                    if (targetIdx > -1) {
+                        ventas[targetIdx] = remoteV;
+                    } else {
+                        ventas.unshift(remoteV);
+                    }
+                    ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    playSynthSound('cash');
+                    showToast(`🔄 Venta del día actualizada desde ${sender} ($${remoteV.total.toFixed(2)})`);
+                    break;
+                }
+                case 'POS_SALE_SAVED': {
+                    const remoteV = event.venta;
+                    if (!remoteV) break;
+                    if (!ventas.some(v => v.id === remoteV.id)) {
+                        ventas.unshift(remoteV);
+                        ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                        if (Array.isArray(remoteV.productos)) {
+                            remoteV.productos.forEach(ci => {
+                                const prod = productos.find(p => p.id === ci.id);
+                                if (prod && ci.id !== 999999) prod.stock -= (ci.qty || 1);
+                            });
+                        }
+                        playSynthSound('cash');
+                        showToast(`🛒 Venta de $${remoteV.total.toFixed(2)} registrada desde ${sender}`);
+                    }
+                    break;
+                }
+                case 'SALE_MODIFIED': {
+                    const remoteV = event.venta;
+                    if (!remoteV) break;
+                    const idx = ventas.findIndex(v => v.id === remoteV.id);
+                    if (idx > -1) {
+                        ventas[idx] = remoteV;
+                        playSynthSound('save');
+                        showToast(`✏️ Venta modificada desde ${sender}`);
+                    }
+                    break;
+                }
+                case 'SALE_DELETED': {
+                    const saleId = event.saleId;
+                    if (saleId) {
+                        ventas = ventas.filter(v => v.id !== saleId);
+                        if (editingDailySaleId === saleId && typeof cancelarEdicionDiaria === 'function') {
+                            cancelarEdicionDiaria();
+                        }
+                        playSynthSound('delete');
+                        showToast(`🗑️ Venta eliminada desde ${sender}`);
+                    }
+                    break;
+                }
+                case 'MONTH_SALES_DELETED': {
+                    const mes = event.mes;
+                    if (mes) {
+                        ventas = ventas.filter(v => !(v.fecha && v.fecha.startsWith(mes)));
+                        playSynthSound('delete');
+                        showToast(`📅 Ventas del mes ${mes} eliminadas desde ${sender}`);
+                    }
+                    break;
+                }
+            }
+        }
+
+        async function broadcastSyncEvent(event) {
+            if (!syncRoomCode) return;
+            try {
+                const payload = {
+                    code: syncRoomCode,
+                    deviceId: syncDeviceId,
+                    deviceName: syncDeviceName,
+                    event: event
+                };
+                const res = await fetch('/api/sync/push', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json());
+
+                if (res && res.version) {
+                    syncVersion = res.version;
+                    localStorage.setItem('pos_sync_version', syncVersion);
+                }
+            } catch(e) {
+                console.warn('Error emitiendo sync event:', e.message);
+            }
+        }
+
+        function initDeviceSync() {
+            updateSyncUI();
+            const urlParams = new URLSearchParams(window.location.search);
+            const linkCode = urlParams.get('sync') || urlParams.get('enlace') || urlParams.get('code');
+            if (linkCode) {
+                joinSyncRoom(linkCode, true);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (syncRoomCode) {
+                joinSyncRoom(syncRoomCode, false);
+            }
+        }
 
         async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} }
         document.addEventListener('visibilitychange', async () => { if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(); });
@@ -1944,6 +2719,7 @@
 
                 $$('.client-name').forEach(el => el.addEventListener('blur', () => { setTimeout(() => { $$('.client-suggestions').forEach(s => s.style.display = 'none'); }, 250); }));
                 initMarginCalculator();
+                initDeviceSync();
                 renderIcons();
 
             } catch (error) {
@@ -2062,13 +2838,26 @@
             
             const sidebar = document.querySelector('.sidebar'); 
             if (sidebar) sidebar.classList.remove('mobile-open'); 
+            const backdrop = $('sidebar-backdrop');
+            if (backdrop) backdrop.classList.remove('active');
             
             if(tabId === 'dashboard') { renderDashboard(); } 
             if(tabId === 'ventas') { renderDailyVentasUI(); }
             if(tabId === 'configuracion') { renderConfigInputs(); updateMonthDeletePreview(); }
         }
 
-        function toggleSidebar() { const sidebar = document.querySelector('.sidebar'); if(sidebar) { sidebar.classList.toggle('mobile-open'); playSynthSound('click_tab'); } }
+        function toggleSidebar() { 
+            const sidebar = document.querySelector('.sidebar'); 
+            const backdrop = $('sidebar-backdrop');
+            if(sidebar) { 
+                const isOpen = sidebar.classList.toggle('mobile-open'); 
+                if (backdrop) {
+                    if (isOpen) backdrop.classList.add('active');
+                    else backdrop.classList.remove('active');
+                }
+                playSynthSound('click_tab'); 
+            } 
+        }
 
         function runWithZoom(cardId, modalEl, action) {
             if (!document.startViewTransition) { action(); return; }
@@ -3288,6 +4077,7 @@
                 ventas.unshift(venta); ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); 
                 carrito.forEach(ci => { const prod = productos.find(p => p.id === ci.id); if (prod) prod.stock -= ci.qty; }); 
                 saveToStorage(); 
+                broadcastSyncEvent({ type: 'POS_SALE_SAVED', venta: venta }); 
                 
                 playSuccessAnimation(total);
                 carrito = []; updateCartUI(); renderAll(); clearCartInputs(); 
@@ -3451,7 +4241,7 @@
     });
     
     renderIcons();
-} function toggleHistoryDetails(id) { playSynthSound('click_tab'); const detailEl = $(`details-${id}`); if(detailEl) detailEl.classList.toggle('active'); } function reprintTicketFromHistory(id) { const venta = ventas.find(v => v.id === id); if(venta) showTicket(venta); } function cloneSale(id) { const venta = ventas.find(v => v.id === id); if(!venta) return; carrito = JSON.parse(JSON.stringify(venta.productos)); updateCartUI(); playSynthSound('save'); showToast('Copiados al carrito'); } function openEditSaleModal(saleId) { playSynthSound('modal'); const venta = ventas.find(v => v.id === saleId); if (!venta) return; $('edit-sale-id').value = saleId; $('edit-sale-date-hist').value = venta.fecha ? venta.fecha.slice(0, 16) : getLocalISO().slice(0, 16); const itemsContainer = $('edit-sale-items'); itemsContainer.innerHTML = ''; if (venta.productos && venta.productos.length > 0 && !(venta.productos.length === 1 && venta.productos[0].id === 999999)) { venta.productos.forEach((p, index) => { itemsContainer.innerHTML += `<div class="form-group" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px;"><label style="margin:0; font-weight:700; flex:1;">${p.nombre} <small style="color:var(--text-secondary); font-size:12px;">($${p.precioVenta.toFixed(2)} c/u)</small></label><div style="display:flex; align-items:center; gap:8px;"><input type="number" id="edit-prod-qty-${index}" value="${p.qty}" min="0" style="width:75px; text-align:center; padding:8px; font-size:15px; font-weight:800; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg);"><span style="font-size:12px; font-weight:700; color:var(--text-secondary);">uds</span></div></div>`; }); } else { itemsContainer.innerHTML = `<div class="form-group"><label style="font-weight:800; margin-bottom:8px; display:block;">Monto Total de la Venta ($)</label><input type="number" id="edit-sale-total-direct" value="${venta.total}" step="0.01" min="0" style="font-size:22px; font-weight:900; padding:14px; width:100%; border-radius:10px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-primary);"></div>`; } $('edit-sale-modal').classList.add('active'); } function closeEditSaleModal(e) { const m = $('edit-sale-modal'); if (m) m.classList.remove('active'); } function saveEditedSale() { const saleId = parseInt($('edit-sale-id').value), venta = ventas.find(v => v.id === saleId); if (!venta) return; const inputFecha = $('edit-sale-date-hist').value; venta.fecha = inputFecha ? getLocalISO(new Date(inputFecha)) : venta.fecha; let totalNuevo = 0, costoNuevo = 0; if (venta.productos && venta.productos.length > 0 && !(venta.productos.length === 1 && venta.productos[0].id === 999999)) { venta.productos.forEach((p, index) => { const inputQty = parseInt($(`edit-prod-qty-${index}`)?.value) || 0, originalProd = productos.find(prod => prod.id === p.id); if (originalProd) { originalProd.stock += p.qty; originalProd.stock -= inputQty; } p.qty = inputQty; totalNuevo += (p.precioVenta * p.qty); costoNuevo += (p.precioCosto * p.qty); }); } else { const directTotal = parseFloat($('edit-sale-total-direct')?.value); if (!isNaN(directTotal) && directTotal >= 0) { totalNuevo = directTotal; costoNuevo = venta.costoMaterial || 0; if (venta.productos && venta.productos.length > 0) { venta.productos[0].precioVenta = totalNuevo; } } } venta.total = totalNuevo; venta.costoMaterial = costoNuevo; venta.ganancia = totalNuevo - costoNuevo; if (venta.tipoRegistro === 'diario') { const montos = calcularDistribucion(venta.total, distribucionesDiarias); venta.distribucion = { costo: montos[0], servicio: montos[1], mejora: montos[2], emergencia: montos[3], ganancia: montos[4] }; venta.desgloseDistribucion = distribucionesDiarias.map((d, i) => ({ label: d.label, pct: d.pct, monto: montos[i] })); } if(totalNuevo === 0) ventas = ventas.filter(v => v.id !== saleId); saveToStorage(); closeEditSaleModal(null); onDailyFechaChange(); renderAll(); playSynthSound('save'); showToast('Venta modificada y métricas actualizadas'); } function deleteSale(saleId) { if (confirm('¿Eliminar esta venta definitivamente y regresar stock?')) { const el = $(`hist-${saleId}`); if(el) el.classList.add('disintegrate-anim'); setTimeout(()=>{ const venta = ventas.find(v => v.id === saleId); if (venta && venta.productos) { venta.productos.forEach(p => { if (p.id !== 999999) { const originalProd = productos.find(prod => prod.id === p.id); if (originalProd) originalProd.stock += p.qty; } }); } ventas = ventas.filter(v => v.id !== saleId); if (editingDailySaleId === saleId) cancelarEdicionDiaria(); saveToStorage(); onDailyFechaChange(); renderAll(); playSynthSound('delete'); showToast('Venta eliminada y métricas actualizadas'); }, 300); } }
+} function toggleHistoryDetails(id) { playSynthSound('click_tab'); const detailEl = $(`details-${id}`); if(detailEl) detailEl.classList.toggle('active'); } function reprintTicketFromHistory(id) { const venta = ventas.find(v => v.id === id); if(venta) showTicket(venta); } function cloneSale(id) { const venta = ventas.find(v => v.id === id); if(!venta) return; carrito = JSON.parse(JSON.stringify(venta.productos)); updateCartUI(); playSynthSound('save'); showToast('Copiados al carrito'); } function openEditSaleModal(saleId) { playSynthSound('modal'); const venta = ventas.find(v => v.id === saleId); if (!venta) return; $('edit-sale-id').value = saleId; $('edit-sale-date-hist').value = venta.fecha ? venta.fecha.slice(0, 16) : getLocalISO().slice(0, 16); const itemsContainer = $('edit-sale-items'); itemsContainer.innerHTML = ''; if (venta.productos && venta.productos.length > 0 && !(venta.productos.length === 1 && venta.productos[0].id === 999999)) { venta.productos.forEach((p, index) => { itemsContainer.innerHTML += `<div class="form-group" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px;"><label style="margin:0; font-weight:700; flex:1;">${p.nombre} <small style="color:var(--text-secondary); font-size:12px;">($${p.precioVenta.toFixed(2)} c/u)</small></label><div style="display:flex; align-items:center; gap:8px;"><input type="number" id="edit-prod-qty-${index}" value="${p.qty}" min="0" style="width:75px; text-align:center; padding:8px; font-size:15px; font-weight:800; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg);"><span style="font-size:12px; font-weight:700; color:var(--text-secondary);">uds</span></div></div>`; }); } else { itemsContainer.innerHTML = `<div class="form-group"><label style="font-weight:800; margin-bottom:8px; display:block;">Monto Total de la Venta ($)</label><input type="number" id="edit-sale-total-direct" value="${venta.total}" step="0.01" min="0" style="font-size:22px; font-weight:900; padding:14px; width:100%; border-radius:10px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-primary);"></div>`; } $('edit-sale-modal').classList.add('active'); } function closeEditSaleModal(e) { const m = $('edit-sale-modal'); if (m) m.classList.remove('active'); } function saveEditedSale() { const saleId = parseInt($('edit-sale-id').value), venta = ventas.find(v => v.id === saleId); if (!venta) return; const inputFecha = $('edit-sale-date-hist').value; venta.fecha = inputFecha ? getLocalISO(new Date(inputFecha)) : venta.fecha; let totalNuevo = 0, costoNuevo = 0; if (venta.productos && venta.productos.length > 0 && !(venta.productos.length === 1 && venta.productos[0].id === 999999)) { venta.productos.forEach((p, index) => { const inputQty = parseInt($(`edit-prod-qty-${index}`)?.value) || 0, originalProd = productos.find(prod => prod.id === p.id); if (originalProd) { originalProd.stock += p.qty; originalProd.stock -= inputQty; } p.qty = inputQty; totalNuevo += (p.precioVenta * p.qty); costoNuevo += (p.precioCosto * p.qty); }); } else { const directTotal = parseFloat($('edit-sale-total-direct')?.value); if (!isNaN(directTotal) && directTotal >= 0) { totalNuevo = directTotal; costoNuevo = venta.costoMaterial || 0; if (venta.productos && venta.productos.length > 0) { venta.productos[0].precioVenta = totalNuevo; } } } venta.total = totalNuevo; venta.costoMaterial = costoNuevo; venta.ganancia = totalNuevo - costoNuevo; if (venta.tipoRegistro === 'diario') { const montos = calcularDistribucion(venta.total, distribucionesDiarias); venta.distribucion = { costo: montos[0], servicio: montos[1], mejora: montos[2], emergencia: montos[3], ganancia: montos[4] }; venta.desgloseDistribucion = distribucionesDiarias.map((d, i) => ({ label: d.label, pct: d.pct, monto: montos[i] })); } if(totalNuevo === 0) ventas = ventas.filter(v => v.id !== saleId); saveToStorage(); broadcastSyncEvent({ type: totalNuevo === 0 ? 'SALE_DELETED' : 'SALE_MODIFIED', saleId, venta }); closeEditSaleModal(null); onDailyFechaChange(); renderAll(); playSynthSound('save'); showToast('Venta modificada y métricas actualizadas'); } function deleteSale(saleId) { if (confirm('¿Eliminar esta venta definitivamente y regresar stock?')) { const el = $(`hist-${saleId}`); if(el) el.classList.add('disintegrate-anim'); setTimeout(()=>{ const venta = ventas.find(v => v.id === saleId); if (venta && venta.productos) { venta.productos.forEach(p => { if (p.id !== 999999) { const originalProd = productos.find(prod => prod.id === p.id); if (originalProd) originalProd.stock += p.qty; } }); } ventas = ventas.filter(v => v.id !== saleId); if (editingDailySaleId === saleId) cancelarEdicionDiaria(); saveToStorage(); broadcastSyncEvent({ type: 'SALE_DELETED', saleId: saleId }); onDailyFechaChange(); renderAll(); playSynthSound('delete'); showToast('Venta eliminada y métricas actualizadas'); }, 300); } }
         function switchSettingsPane(paneId, btn) { playSynthSound('click_tab'); $$('.settings-pane').forEach(p => p.classList.remove('active')); $$('.settings-menu button').forEach(b => b.classList.remove('active')); $(paneId).classList.add('active'); btn.classList.add('active'); if(paneId === 'cfg-dist') renderConfigInputs(); if(paneId === 'cfg-datos') updateMonthDeletePreview(); }
         function saveMetaMensual() { const val = parseFloat($('cfg-meta-mensual').value); if(isNaN(val) || val <= 0) { triggerError('configuracion'); showToast('Ingresa una meta válida'); return; } metaMensual = val; localStorage.setItem('pos_meta_mensual', val); playSynthSound('save'); showToast('Meta mensual actualizada'); renderReports(); }
         function saveAdminPin() { const val = $('cfg-admin-pin').value; if(val.length !== 4) { triggerError('configuracion'); showToast('El NIP debe ser de 4 dígitos'); return; } adminPin = val; localStorage.setItem('pos_admin_pin', adminPin); $('cfg-admin-pin').value = ''; playSynthSound('save'); showToast('NIP de Administrador actualizado'); }
@@ -3802,6 +4592,8 @@
 
             ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             saveToStorage();
+            const vSync = targetIndex > -1 ? ventas[targetIndex] : (ventas[0] || null);
+            if (vSync) broadcastSyncEvent({ type: 'DAILY_SALE_SAVED', venta: vSync });
 
             // REINICIAR EL MARCADOR A CERO
             if (montoInput) montoInput.value = '';
@@ -3879,6 +4671,7 @@
                 ventas = ventas.filter(v => v.id !== id);
                 if (editingDailySaleId === id) cancelarEdicionDiaria();
                 saveToStorage();
+                broadcastSyncEvent({ type: 'SALE_DELETED', saleId: id });
                 renderAll();
                 playSynthSound('delete');
                 showToast('Registro diario eliminado');
