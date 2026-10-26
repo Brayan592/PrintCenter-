@@ -10,7 +10,30 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '25mb' }));
+
+// Configurar CORS completo para permitir sincronización desde cualquier dispositivo,
+// aplicaciones exportadas, vistas móviles, WebView, y orígenes externos
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 app.use(express.static(__dirname));
+
+// Endpoint de verificación de estado y conectividad
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    version: 'V20.26.11.010 Update',
+    timestamp: Date.now(),
+    server: 'PrintCenterPro Cloud Sync'
+  });
+});
 
 // Memoria y persistencia de tiendas/dispositivos enlazados por código
 const roomsFile = path.join(__dirname, '.sync_rooms.json');

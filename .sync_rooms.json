@@ -1,0 +1,24 @@
+{
+  "PRINT-1038": {
+    "code": "PRINT-1038",
+    "createdAt": 1792976116515,
+    "version": 2,
+    "devices": {
+      "dev_nvzn2j2": {
+        "name": "Celular (Mostrador",
+        "lastSeen": 1792976516089
+      }
+    },
+    "events": [
+      {
+        "type": "DEVICE_HEARTBEAT",
+        "name": "Celular (Mostrador",
+        "version": 2,
+        "deviceId": "dev_nvzn2j2",
+        "deviceName": "Celular (Mostrador",
+        "timestamp": 1792976116515
+      }
+    ],
+    "snapshot": null
+  }
+}
