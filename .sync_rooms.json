@@ -20,5 +20,41 @@
       }
     ],
     "snapshot": null
+  },
+  "TEST-999": {
+    "code": "TEST-999",
+    "createdAt": 1793247134281,
+    "version": 2,
+    "devices": {
+      "dev_pc": {
+        "name": "Caja PC (Admin)",
+        "lastSeen": 1793247134310
+      },
+      "dev_phone": {
+        "name": "Celular Mostrador",
+        "lastSeen": 1793247134302
+      }
+    },
+    "events": [
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 888,
+          "total": 350,
+          "productos": [
+            {
+              "id": 1,
+              "nombre": "Lona",
+              "qty": 1
+            }
+          ]
+        },
+        "version": 2,
+        "deviceId": "dev_pc",
+        "deviceName": "Caja PC (Admin)",
+        "timestamp": 1793247134310
+      }
+    ],
+    "snapshot": null
   }
 }
