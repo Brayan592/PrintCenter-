@@ -6,7 +6,7 @@
     "devices": {
       "dev_nvzn2j2": {
         "name": "Celular (Mostrador",
-        "lastSeen": 1792976516089
+        "lastSeen": 1793558115516
       }
     },
     "events": [
@@ -56,5 +56,216 @@
       }
     ],
     "snapshot": null
+  },
+  "TEST100": {
+    "code": "TEST100",
+    "createdAt": 1793557602432,
+    "version": 7,
+    "devices": {
+      "dev_A": {
+        "name": "PC Caja",
+        "lastSeen": 1793557609420
+      },
+      "dev_B": {
+        "name": "Celular",
+        "lastSeen": 1793557602453
+      },
+      "dev_C": {
+        "name": "Tablet",
+        "lastSeen": 1793557602456
+      }
+    },
+    "events": [
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 2,
+          "total": 350,
+          "fecha": "2026-11-01T12:00:00Z"
+        },
+        "version": 2,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557602449
+      },
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 3,
+          "total": 300
+        },
+        "version": 3,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557609400
+      },
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 4,
+          "total": 400
+        },
+        "version": 4,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557609410
+      },
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 5,
+          "total": 500
+        },
+        "version": 5,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557609414
+      },
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 6,
+          "total": 600
+        },
+        "version": 6,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557609417
+      },
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 7,
+          "total": 700
+        },
+        "version": 7,
+        "deviceId": "dev_A",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557609420
+      }
+    ],
+    "snapshot": {
+      "ventas": [
+        {
+          "id": 1,
+          "total": 100,
+          "fecha": "2026-11-01T10:00:00Z"
+        }
+      ]
+    }
+  },
+  "TESTROOM": {
+    "code": "TESTROOM",
+    "createdAt": 1793557720668,
+    "version": 2,
+    "devices": {
+      "dev_1": {
+        "name": "PC Caja",
+        "lastSeen": 1793557720684
+      },
+      "dev_2": {
+        "name": "Celular",
+        "lastSeen": 1793557720688
+      }
+    },
+    "events": [
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 102,
+          "total": 450,
+          "fecha": "2026-11-01T11:00:00Z"
+        },
+        "version": 2,
+        "deviceId": "dev_1",
+        "deviceName": "PC Caja",
+        "timestamp": 1793557720684
+      }
+    ],
+    "snapshot": {
+      "ventas": [
+        {
+          "id": 102,
+          "total": 450,
+          "fecha": "2026-11-01T11:00:00Z"
+        },
+        {
+          "id": 101,
+          "total": 200,
+          "fecha": "2026-11-01T10:00:00Z"
+        }
+      ],
+      "pedidos": [],
+      "productos": [],
+      "clientes": []
+    }
+  },
+  "PRINT-SYNC-VERIFY": {
+    "code": "PRINT-SYNC-VERIFY",
+    "createdAt": 1793558116293,
+    "version": 2,
+    "devices": {
+      "dev_PC_Caja": {
+        "name": "PC Caja Mostrador",
+        "lastSeen": 1793558116468
+      },
+      "dev_Celular": {
+        "name": "Dispositivo ular",
+        "lastSeen": 1793558116318
+      }
+    },
+    "events": [
+      {
+        "type": "POS_SALE_SAVED",
+        "venta": {
+          "id": 1003,
+          "total": 320,
+          "fecha": "2026-11-01T12:00:00Z",
+          "tipoRegistro": "pos"
+        },
+        "version": 2,
+        "deviceId": "dev_PC_Caja",
+        "deviceName": "PC Caja Mostrador",
+        "timestamp": 1793558116468
+      }
+    ],
+    "snapshot": {
+      "ventas": [
+        {
+          "id": 1003,
+          "total": 320,
+          "fecha": "2026-11-01T12:00:00Z",
+          "tipoRegistro": "pos"
+        },
+        {
+          "id": 1001,
+          "total": 250,
+          "fecha": "2026-11-01T10:00:00Z",
+          "tipoRegistro": "pos"
+        },
+        {
+          "id": 1002,
+          "total": 850,
+          "fecha": "2026-11-01T11:00:00Z",
+          "tipoRegistro": "diario"
+        }
+      ],
+      "pedidos": [
+        {
+          "id": 501,
+          "cliente": "Empresa ABC",
+          "total": 400,
+          "estado": "Pendiente"
+        }
+      ],
+      "productos": [
+        {
+          "id": 1,
+          "nombre": "Papel",
+          "stock": 100
+        }
+      ],
+      "clientes": []
+    }
   }
 }
