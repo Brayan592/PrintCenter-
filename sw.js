@@ -1,5 +1,5 @@
-// PrintCenterPro Service Worker - v.20.26.11.100 Uptade IA
-const CACHE_NAME = 'printcenterpro-v20.26.11.100';
+// PrintCenterPro Service Worker - v.20.26.11.500 Update IA Ultimate
+const CACHE_NAME = 'printcenterpro-v20.26.11.500';
 const APP_SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -73,9 +73,9 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-function buildNotificationOptions(payload = {}) {
+function buildNotificationOptions(payload = {}, includeActions = true) {
   const data = payload.data || {};
-  return {
+  const opts = {
     body: payload.body || 'Tienes una nueva alerta operativa en PrintCenterPro.',
     icon: payload.icon || '/pwa-192x192.png',
     badge: payload.badge || '/pwa-192x192.png',
@@ -91,12 +91,40 @@ function buildNotificationOptions(payload = {}) {
       noteId: data.noteId || null,
       targetId: data.targetId || null,
       urgency: data.urgency || 'warning'
-    },
-    actions: payload.actions || [
+    }
+  };
+  if (includeActions) {
+    opts.actions = payload.actions || [
       { action: 'open_tab', title: data.actionLabel || 'Ver ahora' },
       { action: 'mark_read', title: 'Marcar vista' }
-    ]
-  };
+    ];
+  }
+  return opts;
+}
+
+async function safeShowSWNotification(title, payload) {
+  try {
+    await self.registration.showNotification(title, buildNotificationOptions(payload, true));
+    return true;
+  } catch (err) {
+    try {
+      await self.registration.showNotification(title, buildNotificationOptions(payload, false));
+      return true;
+    } catch (err2) {
+      return false;
+    }
+  }
+}
+
+async function broadcastToOpenClients(message) {
+  try {
+    const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    windowClients.forEach((client) => {
+      try {
+        client.postMessage(message);
+      } catch (e) {}
+    });
+  } catch (e) {}
 }
 
 // Receive W3C Web Push notifications from backend
@@ -112,18 +140,16 @@ self.addEventListener('push', (event) => {
   }
 
   const title = payload.title || 'PrintCenterPro Admin';
-  const options = buildNotificationOptions(payload);
+  const options = buildNotificationOptions(payload, false);
 
   event.waitUntil(
-    self.registration.showNotification(title, options).then(async () => {
-      const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      windowClients.forEach((client) => {
-        client.postMessage({
-          type: 'PUSH_RECEIVED',
-          payload: { title, ...options }
-        });
-      });
-    })
+    safeShowSWNotification(title, payload).then((shown) =>
+      broadcastToOpenClients({
+        type: 'PUSH_RECEIVED',
+        shown,
+        payload: { title, ...options }
+      })
+    )
   );
 });
 
@@ -139,8 +165,15 @@ self.addEventListener('message', (event) => {
 
   if (msg.type === 'SHOW_ADMIN_NOTIFICATION' && msg.payload) {
     const title = msg.payload.title || 'Alerta PrintCenterPro';
-    const options = buildNotificationOptions(msg.payload);
-    event.waitUntil(self.registration.showNotification(title, options));
+    event.waitUntil(
+      safeShowSWNotification(title, msg.payload).then((shown) => {
+        if (event.source && typeof event.source.postMessage === 'function') {
+          try {
+            event.source.postMessage({ type: 'PUSH_ACK', shown, tag: msg.payload.tag || '' });
+          } catch (e) {}
+        }
+      })
+    );
   }
 });
 

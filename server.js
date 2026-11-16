@@ -8,7 +8,7 @@ import * as webpush from 'web-push';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const APP_VERSION = 'v.20.26.11.100 Uptade IA';
+const APP_VERSION = 'v.20.26.11.500 Update IA Ultimate';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -88,6 +88,8 @@ function createEmptySnapshot() {
     clientes: [],
     gastos: [],
     notasInternas: [],
+    restockHistory: [],
+    accessWindowMode: 'dual',
     metaMensual: 15000,
     distribucionesDiarias: null,
     distribucionesJuguetes: null,
@@ -119,6 +121,8 @@ function getOrCreateRoom(rawCode) {
   if (!Array.isArray(snap.clientes)) snap.clientes = [];
   if (!Array.isArray(snap.gastos)) snap.gastos = [];
   if (!Array.isArray(snap.notasInternas)) snap.notasInternas = [];
+  if (!Array.isArray(snap.restockHistory)) snap.restockHistory = [];
+  if (snap.accessWindowMode !== 'admin_only') snap.accessWindowMode = 'dual';
   return syncRooms[normCode];
 }
 
@@ -149,6 +153,12 @@ function applyInitialDataToSnapshot(room, data, overwriteAll = false) {
   }
   if (Array.isArray(data.notasInternas) && (overwriteAll || snap.notasInternas.length === 0)) {
     snap.notasInternas = data.notasInternas;
+  }
+  if (Array.isArray(data.restockHistory) && (overwriteAll || !Array.isArray(snap.restockHistory) || snap.restockHistory.length === 0)) {
+    snap.restockHistory = data.restockHistory;
+  }
+  if ((data.accessWindowMode === 'admin_only' || data.accessWindowMode === 'dual') && (overwriteAll || !snap.accessWindowMode)) {
+    snap.accessWindowMode = data.accessWindowMode;
   }
   if (typeof data.metaMensual === 'number' && data.metaMensual > 0 && (overwriteAll || !snap.metaMensual)) {
     snap.metaMensual = data.metaMensual;
@@ -397,6 +407,12 @@ app.post('/api/sync/push', (req, res) => {
       snap.notasInternas = snap.notasInternas.filter(x => x.id !== event.noteId);
     } else if (evType === 'NOTES_SYNC' && Array.isArray(event.notasInternas)) {
       snap.notasInternas = event.notasInternas;
+    } else if (evType === 'RESTOCK_LOG_ADDED' && event.entry) {
+      if (!Array.isArray(snap.restockHistory)) snap.restockHistory = [];
+      const exists = snap.restockHistory.some(r => r.id === event.entry.id);
+      if (!exists) snap.restockHistory.unshift(event.entry);
+    } else if (evType === 'ACCESS_MODE_UPDATED' && (event.accessWindowMode === 'admin_only' || event.accessWindowMode === 'dual')) {
+      snap.accessWindowMode = event.accessWindowMode;
     } else if (evType === 'META_MENSUAL_UPDATED' && typeof event.metaMensual === 'number') {
       snap.metaMensual = event.metaMensual;
     } else if (evType === 'FINANCE_SETTINGS_SYNC') {
@@ -426,6 +442,12 @@ app.post('/api/sync/push', (req, res) => {
     }
     if (Array.isArray(fullSnapshot.notasInternas)) {
       snap.notasInternas = fullSnapshot.notasInternas;
+    }
+    if (Array.isArray(fullSnapshot.restockHistory)) {
+      snap.restockHistory = fullSnapshot.restockHistory;
+    }
+    if (fullSnapshot.accessWindowMode === 'admin_only' || fullSnapshot.accessWindowMode === 'dual') {
+      snap.accessWindowMode = fullSnapshot.accessWindowMode;
     }
     if (typeof fullSnapshot.metaMensual === 'number' && fullSnapshot.metaMensual > 0) {
       snap.metaMensual = fullSnapshot.metaMensual;
@@ -612,11 +634,70 @@ function persistPushSubscriptions() {
   } catch (e) {}
 }
 
+const globalPushSseClients = new Set();
+
+function broadcastGlobalPushSse(data) {
+  if (globalPushSseClients.size === 0) return 0;
+  const payload = `data: ${JSON.stringify(data)}\n\n`;
+  let delivered = 0;
+  for (const client of globalPushSseClients) {
+    try {
+      client.res.write(payload);
+      delivered++;
+    } catch (err) {
+      globalPushSseClients.delete(client);
+    }
+  }
+  return delivered;
+}
+
+app.get('/api/push/stream', (req, res) => {
+  const { deviceId = '', role = 'admin', roomCode = '' } = req.query || {};
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no'
+  });
+  res.write(': push-stream-connected\n\n');
+
+  const clientEntry = {
+    res,
+    deviceId: String(deviceId || ''),
+    role: String(role || 'admin'),
+    roomCode: String(roomCode || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '')
+  };
+  globalPushSseClients.add(clientEntry);
+
+  res.write(`data: ${JSON.stringify({
+    type: 'PUSH_STREAM_READY',
+    version: APP_VERSION,
+    vapidReady: Boolean(vapidKeys?.publicKey),
+    activeSubscriptions: pushSubscriptions.length,
+    timestamp: Date.now()
+  })}\n\n`);
+
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(': push-ping\n\n');
+    } catch (e) {
+      clearInterval(heartbeat);
+      globalPushSseClients.delete(clientEntry);
+    }
+  }, 15000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    globalPushSseClients.delete(clientEntry);
+  });
+});
+
 app.get('/api/push/vapid-public-key', (req, res) => {
   res.json({
     available: Boolean(vapidKeys?.publicKey),
     publicKey: vapidKeys?.publicKey || null,
-    activeSubscriptions: pushSubscriptions.length
+    activeSubscriptions: pushSubscriptions.length,
+    sseClients: globalPushSseClients.size
   });
 });
 
@@ -681,35 +762,41 @@ app.post('/api/push/send-alert', async (req, res) => {
     }
   };
 
-  // 1. Broadcast SSE instantáneo en la sala si hay dispositivos conectados
-  if (normCode) {
-    broadcastToSseClients(normCode, {
-      type: 'EVENT',
-      event: {
-        type: 'ADMIN_PUSH_ALERT',
-        eventId: 'push_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-        deviceId: excludeDeviceId || 'server',
-        targetRole,
-        payload: payloadObj,
-        timestamp: Date.now()
-      }
-    });
-  }
+  const pushEventEnvelope = {
+    type: 'EVENT',
+    event: {
+      type: 'ADMIN_PUSH_ALERT',
+      eventId: 'push_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      deviceId: excludeDeviceId || 'server',
+      targetRole,
+      roomCode: normCode,
+      payload: payloadObj,
+      timestamp: Date.now()
+    }
+  };
 
-  // 2. Dispatch real W3C Web Push to registered admin subscriptions
+  // 1. Broadcast SSE instantáneo en la sala enlazada + canal global push SSE
+  if (normCode) {
+    broadcastToSseClients(normCode, pushEventEnvelope);
+  }
+  const globalSseSent = broadcastGlobalPushSse(pushEventEnvelope);
+
+  // 2. Dispatch real W3C Web Push to registered subscriptions
   const candidates = pushSubscriptions.filter(s => {
-    if (targetRole && s.role && s.role !== targetRole) return false;
+    if (targetRole && s.role && s.role !== targetRole && s.role !== 'dual') return false;
     if (normCode && s.roomCode && s.roomCode !== normCode) return false;
     return true;
   });
 
   let sentCount = 0;
+  let failedCount = 0;
   let removed = false;
   await Promise.all(candidates.map(async (subEntry) => {
     try {
       await webpush.sendNotification(subEntry.subscription, JSON.stringify(payloadObj));
       sentCount++;
     } catch (err) {
+      failedCount++;
       if (err && (err.statusCode === 404 || err.statusCode === 410)) {
         pushSubscriptions = pushSubscriptions.filter(s => s.endpoint !== subEntry.endpoint);
         removed = true;
@@ -721,8 +808,10 @@ app.post('/api/push/send-alert', async (req, res) => {
 
   res.json({
     success: true,
-    sseBroadcasted: Boolean(normCode),
+    sseBroadcasted: Boolean(normCode) || globalSseSent > 0,
+    globalSseSent,
     pushSent: sentCount,
+    pushFailed: failedCount,
     registeredTargets: candidates.length
   });
 });
@@ -834,6 +923,80 @@ Mantén "answer" conciso (máximo 110 palabras), usa "cards" para mostrar existe
       mode: 'local-fallback',
       fallback: true,
       reason: 'gemini_unavailable'
+    });
+  }
+});
+
+const ALLOWED_TTS_VOICES = new Set(['Kore', 'Puck', 'Zephyr', 'Charon', 'Fenrir']);
+
+app.post('/api/ai/tts', async (req, res) => {
+  const { text, voiceName = 'Kore', mode = 'admin' } = req.body || {};
+  const cleanText = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 1400);
+  if (!cleanText) {
+    return res.status(400).json({ ok: false, error: 'Texto requerido' });
+  }
+
+  if (!geminiClient) {
+    return res.json({
+      ok: false,
+      fallback: true,
+      reason: 'missing_api_key'
+    });
+  }
+
+  const chosenVoice = ALLOWED_TTS_VOICES.has(voiceName) ? voiceName : 'Kore';
+  const stylePrompt = mode === 'admin'
+    ? 'Habla en español de México con tono ejecutivo, claro y natural.'
+    : 'Habla en español de México con tono amable, ágil y servicial de atención al mostrador.';
+
+  try {
+    const response = await geminiClient.models.generateContent({
+      model: 'gemini-3.8-flash-lite-tts',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: cleanText,
+              speechMetadata: { style: stylePrompt }
+            }
+          ]
+        }
+      ],
+      config: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: chosenVoice
+            }
+          }
+        }
+      }
+    });
+
+    const parts = response?.candidates?.[0]?.content?.parts || [];
+    const audioPart = parts.find(p => p.inlineData && p.inlineData.data);
+    if (!audioPart?.inlineData?.data) {
+      return res.json({
+        ok: false,
+        fallback: true,
+        reason: 'empty_audio_response'
+      });
+    }
+
+    return res.json({
+      ok: true,
+      voiceName: chosenVoice,
+      mimeType: audioPart.inlineData.mimeType || 'audio/wav',
+      audioBase64: audioPart.inlineData.data
+    });
+  } catch (err) {
+    console.warn('Gemini TTS fallback:', err.message);
+    return res.json({
+      ok: false,
+      fallback: true,
+      reason: 'tts_unavailable'
     });
   }
 });
