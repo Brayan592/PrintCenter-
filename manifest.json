@@ -1,0 +1,40 @@
+{
+  "id": "/",
+  "name": "PrintCenterPro POS",
+  "short_name": "PrintCenter",
+  "description": "Sistema punto de venta para centro de impresión y copiado con alertas push, mensajería interna, IA y sincronización en tiempo real.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0071e3",
+  "background_color": "#f5f5f7",
+  "lang": "es-MX",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

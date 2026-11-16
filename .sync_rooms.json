@@ -6,7 +6,7 @@
     "devices": {
       "dev_nvzn2j2": {
         "name": "Celular (Mostrador",
-        "lastSeen": 1793558115516
+        "lastSeen": 1794806897235
       }
     },
     "events": [
@@ -19,7 +19,17 @@
         "timestamp": 1792976116515
       }
     ],
-    "snapshot": null
+    "snapshot": {
+      "productos": [],
+      "ventas": [],
+      "pedidos": [],
+      "clientes": [],
+      "gastos": [],
+      "metaMensual": 15000,
+      "distribucionesDiarias": null,
+      "distribucionesJuguetes": null,
+      "ajustesSaldo": null
+    }
   },
   "TEST-999": {
     "code": "TEST-999",
